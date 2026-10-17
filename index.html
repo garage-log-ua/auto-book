@@ -1,0 +1,1336 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Авто · сервісна книжка</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&family=Roboto+Condensed:wght@500;700&display=swap">
+<style>
+/* Layout: dashboard first. Floating pill nav + three-bar button with speed-dial. Forms open as bottom sheets. Blue accent, light and dark. */
+:root{
+  --bg:#eef1f6; --surface:#ffffff; --ink:#161b24; --muted:#5d6879; --line:#d5dbe5;
+  --accent:#1677ff; --accent-ink:#ffffff; --accent-soft:#e3eeff;
+  --warn:#b45309; --bad:#c62828; --ok:#15803d;
+  --c-fuel:#10b981; --c-svc:#f59e0b; --c-km:#06b6d4; --c-exp:#ec4899; --c-rem:#a3560b; --c-car:#1677ff;
+  --shadow:0 10px 30px rgba(20,40,80,.14);
+  --f-display:"Roboto Condensed","Arial Narrow",sans-serif;
+  --f-body:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0f1115; --surface:#181b21; --ink:#e7eaee; --muted:#8d96a3; --line:#2a2f38;
+    --accent:#3d8bff; --accent-ink:#ffffff; --accent-soft:#16253d;
+    --warn:#f0b429; --bad:#f87171; --ok:#4ade80; --shadow:0 10px 30px rgba(0,0,0,.5); color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0f1115; --surface:#181b21; --ink:#e7eaee; --muted:#8d96a3; --line:#2a2f38;
+  --accent:#3d8bff; --accent-ink:#ffffff; --accent-soft:#16253d;
+  --warn:#f0b429; --bad:#f87171; --ok:#4ade80; --shadow:0 10px 30px rgba(0,0,0,.5); color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font:15px/1.5 var(--f-body);margin:0;
+  padding-block:0 calc(env(safe-area-inset-bottom,0px) + 128px);
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:30;background:var(--bg)}
+.wrap{max-width:640px;margin:0 auto;display:flex;flex-direction:column;gap:14px}
+header.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--bg);padding:12px 0 10px;border-bottom:1px solid var(--line)}
+h1{font:700 28px/1 var(--f-display);text-transform:uppercase;letter-spacing:.04em;margin:0}
+.sub{color:var(--muted);font-size:13px;margin-top:4px}
+.ic{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex:0 0 auto}
+h2{font:700 15px/1 var(--f-display);text-transform:uppercase;letter-spacing:.09em;margin:0;color:var(--muted);display:flex;align-items:center;gap:8px}
+h2 .ic{color:var(--accent)}
+.page{display:none}.page.on{display:flex;flex-direction:column;gap:14px}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:16px;display:flex;flex-direction:column;gap:12px;min-width:0}
+.prow{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.grid>*{min-width:0}
+@media (max-width:440px){.grid.r1{grid-template-columns:minmax(0,1fr)}}
+.field{display:flex;flex-direction:column;gap:4px;min-width:0}
+.field.full{grid-column:1/-1}
+label,.lbl{font-size:12px;color:var(--muted);letter-spacing:.03em}
+input,select,textarea{font:inherit;font-size:16px;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:0 12px;height:46px;width:100%;min-width:0;max-width:100%;display:block;-webkit-appearance:none;appearance:none;line-height:44px}
+textarea{height:auto;line-height:1.4;padding:10px 12px;resize:vertical}
+input[type=date],input[type=month]{padding-right:6px;text-align:left;overflow:hidden}
+input[type=date]::-webkit-date-and-time-value,input[type=month]::-webkit-date-and-time-value{text-align:left;min-width:0}
+select{background-image:linear-gradient(45deg,transparent 50%,var(--muted) 50%),linear-gradient(135deg,var(--muted) 50%,transparent 50%);background-position:calc(100% - 19px) 20px,calc(100% - 14px) 20px;background-size:5px 5px,5px 5px;background-repeat:no-repeat;padding-right:34px;text-overflow:ellipsis}
+input[type=file]{height:auto;padding:10px;font-size:13px;line-height:1.3}
+input:focus-visible,select:focus-visible,textarea:focus-visible,button:focus-visible,summary:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+.btns{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+button{font:600 14px var(--f-body);border-radius:10px;padding:0 14px;min-height:42px;border:1px solid var(--line);background:var(--surface);color:var(--ink);cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:7px}
+button:hover{border-color:var(--accent)}
+button.p{background:var(--accent);border-color:var(--accent);color:var(--accent-ink)}
+button.danger{color:var(--bad)}
+button.sm{min-height:34px;padding:0 10px;font-size:12px}
+button.link{border:0;background:transparent;color:var(--accent);padding:0;min-height:0;font-weight:600}
+label.fbtn{font:600 14px var(--f-body);color:var(--ink);letter-spacing:0;border:1px solid var(--line);border-radius:10px;min-height:42px;padding:0 14px;display:inline-flex;align-items:center;gap:7px;cursor:pointer;background:var(--surface)}
+.m{font-size:13px;color:var(--muted);overflow-wrap:anywhere}
+.t{font-weight:600;overflow-wrap:anywhere}
+.n{font:500 14px var(--f-mono);font-variant-numeric:tabular-nums;text-align:right;white-space:nowrap}
+.empty{color:var(--muted);font-size:14px}
+.warn{color:var(--warn);font-weight:600}.ok{color:var(--ok)}.bad{color:var(--bad);font-weight:600}
+.list{display:flex;flex-direction:column;margin:0;padding:0;list-style:none}
+.list>li{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 10px;padding:11px 0;border-top:1px solid var(--line);align-items:start}
+.list>li:first-child{border-top:0}
+.side{display:flex;flex-direction:column;gap:6px;align-items:flex-end}
+.mh{display:flex;justify-content:space-between;gap:8px;font:700 13px var(--f-display);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.mh span:last-child{font-family:var(--f-mono);font-weight:500;letter-spacing:0;text-transform:none}
+.photo{max-width:100%;border-radius:10px;margin-top:8px;display:block;border:1px solid var(--line)}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{border:1px solid var(--line);background:var(--surface);border-radius:99px;padding:0 13px;min-height:34px;font-size:13px;font-weight:600}
+.chip[aria-pressed=true]{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.seg{display:grid;grid-auto-flow:column;grid-auto-columns:1fr;background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:4px}
+.seg button{border:0;background:transparent;min-height:36px;border-radius:9px;font:600 12px var(--f-body);letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.seg button[aria-pressed=true]{background:var(--bg);color:var(--ink)}
+.found{display:flex;flex-direction:column;border:1px solid var(--line);border-radius:10px;max-height:230px;overflow:auto}
+.pick{display:flex;justify-content:space-between;gap:10px;align-items:center;padding:10px 12px;border-top:1px solid var(--line);cursor:pointer}
+.pick:first-child{border-top:0}
+.pick:hover{background:var(--accent-soft)}
+.checks{display:flex;flex-direction:column;max-height:280px;overflow:auto;border:1px solid var(--line);border-radius:10px;background:var(--bg)}
+.checks label{display:flex;align-items:center;gap:10px;font-size:15px;color:var(--ink);letter-spacing:0;padding:10px 12px;border-bottom:1px solid var(--line);cursor:pointer}
+.checks label:last-child{border-bottom:0}
+.checks input[type=checkbox]{width:20px;height:20px;flex:0 0 20px;padding:0;margin:0;-webkit-appearance:auto;appearance:auto;accent-color:var(--accent)}
+.result{border:1px dashed var(--line);border-radius:10px;padding:12px;font-weight:500}
+details.day{border-top:1px solid var(--line)}
+details.day summary{list-style:none;cursor:pointer;display:flex;justify-content:space-between;gap:10px;padding:11px 0}
+details.day summary::-webkit-details-marker{display:none}
+details.day summary .d{font-weight:600}
+details.day summary .n{color:var(--muted)}
+details.day .body{padding:0 0 12px;display:flex;flex-direction:column;gap:8px}
+/* dashboard */
+.hero{background:linear-gradient(160deg,color-mix(in srgb,var(--accent) 22%,var(--surface)),var(--surface) 70%);border:1px solid var(--line);border-radius:20px;padding:16px;display:flex;flex-direction:column;gap:12px;box-shadow:var(--shadow)}
+.hrow{display:flex;align-items:center;gap:12px}
+.logo{width:56px;height:56px;border-radius:16px;background:var(--surface);border:1px solid var(--line);display:flex;align-items:center;justify-content:center;color:var(--accent);flex:0 0 56px;overflow:hidden;padding:0}
+.logo img{width:100%;height:100%;object-fit:cover}
+.logo .ic{width:30px;height:30px}
+.hmain{flex:1;min-width:0;text-align:left;background:none;border:0;padding:0;display:block;min-height:0;cursor:pointer;color:inherit}
+.hname{font:700 20px/1.15 var(--f-display);letter-spacing:.02em;overflow-wrap:anywhere}
+.hspec{font-size:12.5px;color:var(--muted);margin-top:2px}
+.bell{position:relative;width:46px;height:46px;padding:0;border-radius:14px;flex:0 0 46px}
+.bell b{position:absolute;top:-6px;right:-6px;min-width:20px;height:20px;border-radius:99px;background:var(--bad);color:#fff;font:700 11px/20px var(--f-body);text-align:center;padding:0 5px}
+.hfuel{display:flex;justify-content:space-between;color:var(--muted);font-weight:500}
+.hfuel b{font-family:var(--f-mono);font-weight:500;color:var(--ink)}
+.gauge{height:8px;border-radius:99px;background:color-mix(in srgb,var(--muted) 25%,transparent);overflow:hidden}
+.gauge i{display:block;height:100%;background:var(--accent);border-radius:99px}
+.tiles{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));background:var(--surface);border:1px solid var(--line);border-radius:18px}
+.tile{display:flex;flex-direction:column;align-items:stretch;justify-content:flex-start;gap:6px;border:0;background:transparent;border-radius:18px;padding:14px;text-align:left;min-height:104px;color:var(--ink)}
+.tile+.tile{border-left:1px solid var(--line);border-radius:0 18px 18px 0}
+.th{display:flex;align-items:center;gap:8px;font-weight:600;font-size:15px}
+.th .ic{color:var(--accent)}
+.th .ic:last-child{margin-left:auto;color:var(--muted);width:16px;height:16px}
+.tv{font:700 30px/1.1 var(--f-display);font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.tv u{font:400 13px var(--f-body);text-decoration:none;color:var(--muted);margin-left:3px}
+.tile .m{margin-top:-2px}
+.sech{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:4px}
+.sech h3{margin:0;font:700 20px var(--f-display);letter-spacing:.03em}
+.fcard{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:14px;display:flex;flex-direction:column;gap:6px;min-height:96px}
+.fcard .th .ic{color:var(--c-fuel)}
+.fcard .big{font:700 24px var(--f-display);font-variant-numeric:tabular-nums}
+.evl{display:flex;flex-direction:column;gap:8px;margin:0;padding:0;list-style:none}
+.ev{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:12px;align-items:center;background:var(--surface);border:1px solid var(--line);border-left:4px solid var(--c);border-radius:16px;padding:10px 12px}
+.evi{width:44px;height:44px;border-radius:12px;background:color-mix(in srgb,var(--c) 16%,var(--surface));color:var(--c);display:flex;align-items:center;justify-content:center}
+.evr{display:flex;flex-direction:column;align-items:flex-end;gap:2px}
+.pchart{width:100%;height:auto;display:block}
+.pchart .gl{stroke:var(--line);stroke-width:1}
+.pchart .ln{fill:none;stroke:var(--accent);stroke-width:2.4;stroke-linejoin:round;stroke-linecap:round}
+.pchart .pt{fill:var(--surface);stroke:var(--accent);stroke-width:2}
+.pchart .pe{fill:var(--accent);stroke:var(--surface);stroke-width:2}
+.pchart text{fill:var(--muted);font:11px var(--f-mono)}
+/* vehicles */
+.vcard{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:14px;display:flex;flex-direction:column;gap:12px}
+.vtop{display:flex;gap:12px;align-items:flex-start}
+.vtop .logo{width:76px;height:76px;flex:0 0 76px;border-radius:18px}
+.vinfo{flex:1;min-width:0}
+.vinfo b{font:700 19px/1.2 var(--f-display);letter-spacing:.02em;overflow-wrap:anywhere}
+.vodo{font:700 28px/1.2 var(--f-display);font-variant-numeric:tabular-nums}
+.vodo u{font:400 13px var(--f-body);text-decoration:none;color:var(--muted);margin-left:3px}
+.dots{width:38px;min-height:38px;padding:0;border:0;background:transparent;color:var(--muted)}
+.vmenu{display:flex;flex-wrap:wrap;gap:8px;padding:10px;border:1px dashed var(--line);border-radius:12px}
+.vgrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px 8px;border-top:1px solid var(--line);padding-top:12px}
+.vgrid .k{font-size:12px;color:var(--muted)}
+.vgrid .v{font-weight:600;font-size:14px;overflow-wrap:anywhere}
+.pill{display:inline-block;font-size:11px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;border-radius:99px;padding:2px 8px;border:1px solid var(--accent);color:var(--accent)}
+.bars{display:flex;flex-direction:column;gap:10px}
+.brow{display:grid;grid-template-columns:96px minmax(0,1fr) auto;gap:10px;align-items:center;font-size:14px}
+.brow .tr{height:10px;border-radius:99px;background:color-mix(in srgb,var(--muted) 20%,transparent);overflow:hidden}
+.brow .tr i{display:block;height:100%;border-radius:99px;background:var(--c,var(--accent))}
+.bar2{display:flex;align-items:flex-end;gap:6px;overflow:auto;padding-top:8px}
+.bar2>div{display:flex;flex-direction:column;align-items:center;width:28px;flex:0 0 28px;font-size:10px;color:var(--muted)}
+.bar2 i{display:block;width:18px;background:var(--accent);border-radius:5px 5px 2px 2px;margin:2px 0}
+/* bottom nav + fab */
+.nav{position:fixed;z-index:40;left:calc(12px + env(safe-area-inset-left,0px));right:calc(86px + env(safe-area-inset-right,0px));bottom:calc(16px + env(safe-area-inset-bottom,0px));max-width:420px;height:62px;
+  background:color-mix(in srgb,var(--surface) 88%,transparent);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border:1px solid var(--line);border-radius:24px;box-shadow:var(--shadow);display:flex;align-items:center;gap:4px;padding:6px}
+.nav button{border:0;background:transparent;border-radius:18px;height:50px;min-height:50px;padding:0;flex:1 1 0;min-width:0;color:var(--muted);font:700 14px var(--f-display);letter-spacing:.06em;text-transform:uppercase;position:relative}
+.nav button .ic{width:24px;height:24px}
+.nav button .lb{display:none}
+.nav button.on{flex:2.2 1 0;background:var(--accent-soft);color:var(--accent)}
+.nav button.on .lb{display:inline}
+.nav button.on::after{content:"";position:absolute;left:50%;bottom:3px;width:26px;height:3px;margin-left:-13px;border-radius:3px;background:var(--accent)}
+#fab{position:fixed;z-index:62;right:calc(16px + env(safe-area-inset-right,0px));bottom:calc(14px + env(safe-area-inset-bottom,0px));width:62px;height:62px;padding:0;border-radius:50%;background:var(--accent);border:0;color:var(--accent-ink);box-shadow:0 8px 22px rgba(22,119,255,.4),0 2px 6px rgba(0,0,0,.25)}
+#fab:hover{border:0}
+#fab .bars3{position:relative;width:22px;height:16px;display:block}
+#fab .bars3 i{position:absolute;left:0;width:22px;height:2.5px;border-radius:2px;background:currentColor;transition:transform .2s,opacity .2s,top .2s}
+#fab .bars3 i:nth-child(1){top:0}#fab .bars3 i:nth-child(2){top:6.7px}#fab .bars3 i:nth-child(3){top:13.4px}
+#fab[aria-expanded=true] .bars3 i:nth-child(1){top:6.7px;transform:rotate(45deg)}
+#fab[aria-expanded=true] .bars3 i:nth-child(2){opacity:0}
+#fab[aria-expanded=true] .bars3 i:nth-child(3){top:6.7px;transform:rotate(-45deg)}
+.scrim{position:fixed;inset:0;z-index:50;background:rgba(10,14,22,.38);backdrop-filter:blur(7px);-webkit-backdrop-filter:blur(7px)}
+.dial{position:fixed;z-index:61;right:calc(16px + env(safe-area-inset-right,0px));bottom:calc(92px + env(safe-area-inset-bottom,0px));display:flex;flex-direction:column;gap:14px;align-items:flex-end}
+.dial button{border:0;background:transparent;padding:0;min-height:0;gap:14px;flex-direction:row;color:var(--ink);animation:rise .18s ease-out both}
+.dial button:hover{border:0}
+.dial .lab{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px 20px;font:700 17px var(--f-body);box-shadow:var(--shadow)}
+.dial .tile2{width:62px;height:62px;border-radius:18px;display:flex;align-items:center;justify-content:center;color:#fff;box-shadow:var(--shadow)}
+.dial .tile2 .ic{width:28px;height:28px}
+@keyframes rise{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.more{position:fixed;z-index:61;right:calc(86px + env(safe-area-inset-right,0px));bottom:calc(88px + env(safe-area-inset-bottom,0px));width:min(268px,calc(100vw - 110px));background:var(--surface);border:1px solid var(--line);border-radius:20px;box-shadow:var(--shadow);overflow:hidden;animation:rise .16s ease-out both}
+.more button{width:100%;justify-content:flex-start;gap:16px;border:0;border-top:1px solid var(--line);border-radius:0;min-height:56px;padding:0 18px;font-size:16px;font-weight:500}
+.more button:first-child{border-top:0}
+.more button .ic{color:var(--muted);width:24px;height:24px}
+.more button[aria-current=page]{color:var(--accent)}
+.more button[aria-current=page] .ic{color:var(--accent)}
+@media (prefers-reduced-motion:reduce){.dial button,.more,.msheet{animation:none}#fab .bars3 i{transition:none}}
+/* sheets */
+.modal{position:fixed;inset:0;z-index:80}
+.modal.l2{z-index:90}
+.modal .mscrim{position:absolute;inset:0;background:rgba(10,14,22,.45);backdrop-filter:blur(5px);-webkit-backdrop-filter:blur(5px)}
+.msheet{position:absolute;left:0;right:0;bottom:0;max-width:640px;margin:0 auto;max-height:92%;background:var(--bg);border-radius:26px 26px 0 0;display:flex;flex-direction:column;animation:up .22s ease-out both;box-shadow:0 -10px 40px rgba(0,0,0,.25)}
+@keyframes up{from{transform:translateY(40px);opacity:0}to{transform:none;opacity:1}}
+.mh2{display:flex;align-items:center;gap:12px;padding:16px max(16px,env(safe-area-inset-left,0px)) 14px;border-bottom:1px solid var(--line);border-radius:26px 26px 0 0;background:linear-gradient(180deg,color-mix(in srgb,var(--c,var(--accent)) 16%,var(--bg)),var(--bg))}
+.mh2 .x{border:0;background:transparent;width:38px;min-height:38px;padding:0;color:var(--muted)}
+.mh2 .hi{color:var(--c,var(--accent));display:flex}
+.mh2 h3{margin:0;font:700 21px var(--f-display);letter-spacing:.03em}
+.mbody{overflow:auto;padding:14px max(16px,env(safe-area-inset-left,0px)) 16px;display:flex;flex-direction:column;gap:14px}
+.mft{display:flex;gap:10px;padding:12px max(16px,env(safe-area-inset-left,0px)) calc(12px + env(safe-area-inset-bottom,0px));border-top:1px solid var(--line);background:var(--bg)}
+.mft button{flex:1;min-height:48px}
+.card2{background:var(--surface);border:1px solid var(--line);border-radius:18px;padding:14px;display:flex;flex-direction:column;gap:12px}
+.card2>h4{margin:0;font:700 16px var(--f-display);letter-spacing:.04em;display:flex;align-items:center;gap:8px}
+.card2>h4::before{content:"";width:4px;height:16px;border-radius:3px;background:var(--accent)}
+.opt{display:flex;align-items:center;gap:14px;width:100%;justify-content:flex-start;min-height:62px;border-radius:18px;padding:0 16px;font-size:16px;text-align:left;background:var(--surface)}
+.opt .ic{width:30px;height:30px}
+.opt .rd{margin-left:auto;width:24px;height:24px;border-radius:50%;border:2px solid var(--line);display:flex;align-items:center;justify-content:center;flex:0 0 24px}
+.opt[aria-checked=true]{background:var(--accent-soft);border-color:var(--accent)}
+.opt[aria-checked=true] .rd{border-color:var(--accent);color:var(--accent)}
+.opt .rd .ic{width:14px;height:14px}
+.opt .rd .ic{display:none}.opt[aria-checked=true] .rd .ic{display:block}
+.ach{align-items:center;text-align:center;padding:10px 0 4px}
+.ach .big{width:100px;height:100px;border-radius:28px;display:flex;align-items:center;justify-content:center;background:color-mix(in srgb,var(--c) 18%,var(--surface));color:var(--c)}
+.ach .big .ic{width:54px;height:54px}
+.ach h4{margin:8px 0 0;font:700 28px var(--f-display)}
+.sel{height:46px;border:1px solid var(--line);border-radius:10px;background:var(--bg);display:flex;align-items:center;justify-content:space-between;gap:10px;padding:0 12px;width:100%;font-weight:500;font-size:16px;min-height:46px}
+/* preview + toast */
+#view{position:fixed;inset:0;z-index:100;background:var(--bg);overflow:auto;padding:calc(10px + env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) calc(24px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px))}
+#view .in{max-width:640px;margin:0 auto}
+#view .bar{display:flex;justify-content:space-between;align-items:center;gap:10px;position:sticky;top:0;background:var(--bg);padding:6px 0 10px}
+#view .doc{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px;overflow-x:auto}
+#view h1{font-size:20px;margin-bottom:6px}
+#view table{border-collapse:collapse;min-width:100%}
+#view th,#view td{border-bottom:1px solid var(--line);padding:6px 8px;text-align:left;vertical-align:top;font-size:13px}
+#view th{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+#view img{max-width:160px;border-radius:6px;display:block}
+#toast{position:fixed;left:max(12px,env(safe-area-inset-left,0px));right:max(12px,env(safe-area-inset-right,0px));top:calc(10px + env(safe-area-inset-top,0px));max-width:560px;margin:0 auto;z-index:120;background:var(--surface);color:var(--ink);border:1px solid var(--line);border-left:5px solid var(--ok);border-radius:14px;padding:14px 16px;box-shadow:var(--shadow);display:flex;align-items:center;gap:10px;font-weight:500}
+#toast.err{border-left-color:var(--bad)}
+#toast .ic{color:var(--ok)}#toast.err .ic{color:var(--bad)}
+@media (prefers-reduced-motion:no-preference){html{scroll-behavior:smooth}}
+
+/* ===== Drayvo-style redesign ===== */
+:root{--bg:#f2f2f3;--surface:#fff;--ink:#14161a;--muted:#6b7280;--line:#e7e9ee;--accent:#1f6feb;--accent-soft:#dce9fd;--shadow:0 8px 28px rgba(20,30,50,.08);--ac2:#ef6c00;--f-display:"Inter",system-ui,sans-serif;--f-body:"Inter",system-ui,-apple-system,sans-serif}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--accent-soft:#16253d}}
+body{font-size:16px}
+h1{font:700 30px/1.1 var(--f-display);text-transform:none;letter-spacing:-.01em}
+header.top{background:var(--bg);border-bottom:0;padding:18px 0 8px}
+h2{font:600 16px var(--f-display);text-transform:none;letter-spacing:0;color:var(--ink)}
+.panel,.card2,.vcard,.fcard,.tiles,.hero,.ev,.msheet .opt{border:0;border-radius:26px;box-shadow:none}
+.ev{border-left:0;border-radius:22px}.tile+.tile{border-left:1px solid var(--line)}
+.hero{background:var(--surface)}
+.hname{font:700 22px/1.15 var(--f-display);letter-spacing:0}
+.card2>h4{font:600 16px var(--f-display);letter-spacing:0}
+input,select,textarea{border-radius:16px;background:var(--surface)}
+.card2 input,.card2 select,.card2 textarea,.panel input,.panel select,.panel textarea{background:var(--bg);border-color:transparent}
+select{border-radius:99px}
+button{border-radius:99px}button.p{border-radius:99px}button.sm{border-radius:99px}
+.nav{border-radius:34px;background:var(--surface);box-shadow:var(--shadow);border:1px solid var(--line)}
+.nav button{font-family:var(--f-body);text-transform:none;letter-spacing:0;font-weight:600;font-size:15px;border-radius:26px}
+#fab{background:var(--ac2);border:2px solid var(--accent)}
+.msheet{border-radius:30px 30px 0 0}.mh2{background:var(--bg);border-radius:30px 30px 0 0}.mh2 h3{font:700 22px var(--f-display);letter-spacing:0}
+.seg{border-radius:99px;border:0}.seg button{text-transform:none;letter-spacing:0;font-size:14px;border-radius:99px}.seg button[aria-pressed=true]{background:var(--surface);box-shadow:0 1px 4px rgba(0,0,0,.1)}
+.sgroup{background:var(--surface);border-radius:28px;overflow:hidden}
+.srow{display:flex;align-items:center;gap:16px;width:100%;min-height:76px;padding:12px 18px;border:0;border-radius:0;background:transparent;justify-content:flex-start;text-align:left;font-weight:400}
+.srow+.srow{border-top:0}.srow b{display:block;font-weight:600;font-size:17px}.srow .m{display:block}.srow .ic{width:26px;height:26px;color:var(--muted)}
+.lrow{display:flex;align-items:center;gap:14px;padding:14px 18px;min-height:64px}.lrow .ic{color:var(--muted);width:24px;height:24px}
+.pillsel{width:auto;max-width:58%;height:44px;border-radius:99px;border:1px solid var(--line);background:var(--surface)!important;font-size:16px}
+.sw{width:52px;height:30px;min-height:30px;border-radius:99px;background:var(--line);position:relative;padding:0;border:0}
+.sw::after{content:"";position:absolute;top:3px;left:3px;width:24px;height:24px;border-radius:50%;background:#fff;transition:left .2s;box-shadow:0 1px 3px rgba(0,0,0,.3)}
+.sw[aria-checked=true]{background:var(--accent)}.sw[aria-checked=true]::after{left:25px}
+.swatch{width:40px;height:40px;min-height:40px;border-radius:50%;padding:0;border:3px solid var(--surface);box-shadow:0 0 0 1px var(--line)}
+.swatch[aria-pressed=true]{box-shadow:0 0 0 3px var(--ink)}
+.bi{width:34px;height:34px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;color:#fff;font:700 12px var(--f-body);flex:0 0 34px}
+.brow2{display:flex;align-items:center;gap:12px;width:100%;min-height:54px;padding:6px 14px;border:0;border-radius:0;background:transparent;justify-content:flex-start;text-align:left;font-weight:500}
+.brow2+.brow2{border-top:1px solid var(--line)}.brow2 .m{margin-left:auto}
+.vmenu{display:flex;flex-wrap:wrap;gap:8px}
+img{cursor:zoom-in}.logo img,.nolb{cursor:pointer}
+.pv{display:block;max-height:120px;border-radius:14px;margin-top:8px}
+#lb{position:fixed;inset:0;z-index:300;background:rgba(0,0,0,.93);display:flex;align-items:center;justify-content:center}
+#lb img{max-width:96vw;max-height:88vh;object-fit:contain;cursor:zoom-out}
+#lb button{position:absolute;top:calc(14px + env(safe-area-inset-top,0px));right:14px;background:#fff3;color:#fff;border:0;width:44px;padding:0}
+.mbody>*{flex-shrink:0}.mbody{-webkit-overflow-scrolling:touch;overscroll-behavior:contain;min-height:0}
+.pk{cursor:pointer;background-image:linear-gradient(45deg,transparent 50%,var(--muted) 50%),linear-gradient(135deg,var(--muted) 50%,transparent 50%);background-position:calc(100% - 19px) 20px,calc(100% - 14px) 20px;background-size:5px 5px,5px 5px;background-repeat:no-repeat;padding-right:34px;text-overflow:ellipsis}
+</style>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="i-car" viewBox="0 0 24 24"><path d="M5 16v-5l1.7-4.2A2 2 0 0 1 8.6 5.5h6.8a2 2 0 0 1 1.9 1.3L19 11v5"/><path d="M3.5 11h17v5.5h-17z"/><path d="M6 16.5v2M18 16.5v2"/><path d="M7 13.8h.01M17 13.8h.01"/></symbol>
+    <symbol id="i-wrench" viewBox="0 0 24 24"><path d="M14.7 6.3a4 4 0 0 0-5.4 5l-6 6a1.7 1.7 0 0 0 2.4 2.4l6-6a4 4 0 0 0 5-5.4l-2.4 2.4-2.1-.5-.5-2.1z"/></symbol>
+    <symbol id="i-bell" viewBox="0 0 24 24"><path d="M6 16v-5a6 6 0 0 1 12 0v5l1.5 2h-15z"/><path d="M10 20.5a2 2 0 0 0 4 0"/></symbol>
+    <symbol id="i-fuel" viewBox="0 0 24 24"><path d="M5 20V5a1.5 1.5 0 0 1 1.5-1.5h6A1.5 1.5 0 0 1 14 5v15"/><path d="M4 20h11"/><path d="M7 8h5"/><path d="M14 9.5h1.5A1.5 1.5 0 0 1 17 11v5a1.5 1.5 0 0 0 3 0V8.5L17.5 6"/></symbol>
+    <symbol id="i-gauge" viewBox="0 0 24 24"><path d="M4.5 17a8.5 8.5 0 1 1 15 0"/><path d="M12 14l3.5-4.5"/><circle cx="12" cy="14.5" r="1.2"/></symbol>
+    <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6"/><path d="M20 20l-4.5-4.5"/></symbol>
+    <symbol id="i-save" viewBox="0 0 24 24"><path d="M12 4v10m0 0l-4-4m4 4l4-4"/><path d="M5 19h14"/></symbol>
+    <symbol id="i-up" viewBox="0 0 24 24"><path d="M12 20V10m0 0l-4 4m4-4l4 4"/><path d="M5 5h14"/></symbol>
+    <symbol id="i-report" viewBox="0 0 24 24"><path d="M7 3.5h7l4 4V20a.5.5 0 0 1-.5.5h-10.5A.5.5 0 0 1 6.5 20V4a.5.5 0 0 1 .5-.5z"/><path d="M14 3.5V8h4M9 12.5h6M9 16h6"/></symbol>
+    <symbol id="i-calc" viewBox="0 0 24 24"><rect x="5" y="3.5" width="14" height="17" rx="2"/><path d="M8.5 7.5h7M8.5 12h.01M12 12h.01M15.5 12h.01M8.5 16h.01M12 16h.01M15.5 16h.01"/></symbol>
+    <symbol id="i-cal" viewBox="0 0 24 24"><rect x="4" y="5.5" width="16" height="14.5" rx="2"/><path d="M4 10h16M8.5 3.5v4M15.5 3.5v4"/></symbol>
+    <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+    <symbol id="i-eye" viewBox="0 0 24 24"><path d="M2.5 12s3.5-6 9.5-6 9.5 6 9.5 6-3.5 6-9.5 6-9.5-6-9.5-6z"/><circle cx="12" cy="12" r="2.5"/></symbol>
+    <symbol id="i-grid" viewBox="0 0 24 24"><rect x="4" y="4" width="7" height="7" rx="1.6"/><rect x="13" y="4" width="7" height="7" rx="1.6"/><rect x="4" y="13" width="7" height="7" rx="1.6"/><rect x="13" y="13" width="7" height="7" rx="1.6"/></symbol>
+    <symbol id="i-list" viewBox="0 0 24 24"><path d="M9 6h11M9 12h11M9 18h11"/><path d="M4.5 6h.01M4.5 12h.01M4.5 18h.01"/></symbol>
+    <symbol id="i-dots" viewBox="0 0 24 24"><circle cx="5.5" cy="12" r="1.3"/><circle cx="12" cy="12" r="1.3"/><circle cx="18.5" cy="12" r="1.3"/></symbol>
+    <symbol id="i-chart" viewBox="0 0 24 24"><path d="M4 4v16h16"/><path d="M8 16v-4M12 16V8M16 16v-6"/></symbol>
+    <symbol id="i-gear" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 3.5v2.3M12 18.2v2.3M3.5 12h2.3M18.2 12h2.3M6 6l1.6 1.6M16.4 16.4L18 18M18 6l-1.6 1.6M7.6 16.4L6 18"/></symbol>
+    <symbol id="i-wallet" viewBox="0 0 24 24"><path d="M4.5 7.5A2 2 0 0 1 6.5 5.5H17a1.5 1.5 0 0 1 1.5 1.5v2"/><rect x="4.5" y="8.5" width="15" height="10" rx="2"/><path d="M15.5 13.5h.01"/></symbol>
+    <symbol id="i-truck" viewBox="0 0 24 24"><path d="M3.5 6.5h10v9h-10z"/><path d="M13.5 9.5h4l3 3v3h-7z"/><circle cx="7" cy="17" r="1.8"/><circle cx="17" cy="17" r="1.8"/></symbol>
+    <symbol id="i-moto" viewBox="0 0 24 24"><circle cx="6" cy="16" r="3"/><circle cx="18" cy="16" r="3"/><path d="M6 16l4-6h4l2 6M14 10l1-3h3"/></symbol>
+    <symbol id="i-bus" viewBox="0 0 24 24"><rect x="4.5" y="5" width="15" height="12" rx="2"/><path d="M4.5 11h15M7 17v2M17 17v2M8 14h.01M16 14h.01"/></symbol>
+    <symbol id="i-trailer" viewBox="0 0 24 24"><rect x="3.5" y="6" width="14" height="9" rx="1.5"/><path d="M17.5 14h3"/><circle cx="8" cy="17" r="1.6"/><circle cx="13" cy="17" r="1.6"/></symbol>
+    <symbol id="i-special" viewBox="0 0 24 24"><path d="M4 18h10v-4H4z"/><path d="M12 14l2-7 4 1.5-1.5 4.5"/><path d="M6 18v1.5M12 18v1.5"/></symbol>
+    <symbol id="i-bike" viewBox="0 0 24 24"><circle cx="6" cy="16" r="3.5"/><circle cx="18" cy="16" r="3.5"/><path d="M6 16l4-7h5l3 7M10 9l3 7"/></symbol>
+    <symbol id="i-scooter" viewBox="0 0 24 24"><circle cx="6" cy="17" r="2"/><circle cx="18" cy="17" r="2"/><path d="M8 17h8M17 6l1 11M14 6h4"/></symbol>
+    <symbol id="i-bolt" viewBox="0 0 24 24"><path d="M13 3.5L6.5 13.5h5L10.5 20.5 17.5 10.5h-5z"/></symbol>
+    <symbol id="i-camera" viewBox="0 0 24 24"><path d="M4 8.5h3l1.5-2h7l1.5 2h3v10H4z"/><circle cx="12" cy="13.5" r="3.2"/></symbol>
+    <symbol id="i-trophy" viewBox="0 0 24 24"><path d="M8 4.5h8v5a4 4 0 0 1-8 0z"/><path d="M8 6.5H5v1a3 3 0 0 0 3 3M16 6.5h3v1a3 3 0 0 1-3 3M12 13.5v3M9 19.5h6M10 16.5h4"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></symbol>
+    <symbol id="i-chev" viewBox="0 0 24 24"><path d="M9.5 6l6 6-6 6"/></symbol>
+    <symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></symbol>
+    <symbol id="i-trend" viewBox="0 0 24 24"><path d="M4 16l5-5 4 3 7-8"/><path d="M15 6h5v5"/></symbol>
+    <symbol id="i-alert" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M12 8v5M12 16h.01"/></symbol>
+  <symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.5"/><path d="M5 20c0-3.5 3-6 7-6s7 2.5 7 6"/></symbol><symbol id="i-palette" viewBox="0 0 24 24"><path d="M12 4a8 8 0 1 0 0 16c1.5 0 2-1 1.5-2s0-2 1.5-2H17a3 3 0 0 0 3-3c0-4-3.5-9-8-9z"/><path d="M8 11h.01M11 8h.01M15 9h.01"/></symbol><symbol id="i-globe" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8.5"/><path d="M3.5 12h17M12 3.5c3 3 3 14 0 17M12 3.5c-3 3-3 14 0 17"/></symbol><symbol id="i-ruler" viewBox="0 0 24 24"><path d="M4 20V4M4 20h16M4 8h3M4 12h3M4 16h3M8 20v-3M12 20v-3M16 20v-3"/></symbol><symbol id="i-db" viewBox="0 0 24 24"><ellipse cx="12" cy="6" rx="7" ry="3"/><path d="M5 6v12c0 1.7 3 3 7 3s7-1.3 7-3V6M5 12c0 1.7 3 3 7 3s7-1.3 7-3"/></symbol></defs>
+</svg>
+
+<div class="wrap">
+  <header class="top">
+    <h1 id="pgTitle">Авто</h1>
+    <div class="sub" id="pgSub">Сервісна книжка і нагадування</div>
+  </header>
+
+  <div class="page on" id="pg-dash"><div id="dash" style="display:flex;flex-direction:column;gap:14px"></div></div>
+
+  <div class="page" id="pg-log">
+    <div class="chips" id="logChips"></div>
+    <ul class="evl" id="logList"></ul>
+  </div>
+
+  <div class="page" id="pg-cars">
+    <div class="prow"><button class="p" onclick="openBrandList()"><svg class="ic"><use href="#i-plus"/></svg>Додати авто</button></div>
+    <div class="seg" id="carTabs"></div>
+    <div id="carList" style="display:flex;flex-direction:column;gap:12px"></div>
+    <section class="panel">
+      <h2><svg class="ic"><use href="#i-search"/></svg>Пошук авто</h2>
+      <div class="field"><label for="carSearch">Марка або модель</label><input id="carSearch" placeholder="Напр. Octavia" oninput="searchCars()" autocomplete="off"></div>
+      <div id="carResults" class="found" hidden></div>
+    </section>
+  </div>
+
+  <div class="page" id="pg-service">
+    <div class="prow"><button class="p" onclick="openForm('svc')"><svg class="ic"><use href="#i-plus"/></svg>Новий запис</button></div>
+    <section class="panel">
+      <h2><svg class="ic"><use href="#i-report"/></svg>Звіти</h2>
+      <div class="btns">
+        <button onclick="saveServiceReport('html')">Звіт HTML</button>
+        <button onclick="saveServiceReport('excel')">Звіт Excel</button>
+        <button onclick="saveServiceReport('view')"><svg class="ic"><use href="#i-eye"/></svg>Переглянути</button>
+      </div>
+    </section>
+    <div id="svcList" style="display:flex;flex-direction:column;gap:14px"></div>
+  </div>
+
+  <div class="page" id="pg-rem">
+    <div class="prow"><button class="p" onclick="openForm('rem')"><svg class="ic"><use href="#i-plus"/></svg>Нагадування</button></div>
+    <section class="panel"><ul class="list" id="remList"></ul></section>
+  </div>
+
+  <div class="page" id="pg-fuel">
+    <div class="prow"><button class="p" onclick="openForm('fuel')"><svg class="ic"><use href="#i-plus"/></svg>Заправка</button></div>
+    <section class="panel">
+      <div id="fuelStats" class="m"></div>
+      <ul class="list" id="fuelList"></ul>
+    </section>
+    <section class="panel"><h2><svg class="ic"><use href="#i-trend"/></svg>Ціна пального</h2><div id="fuelPrice"></div></section>
+  </div>
+
+  <div class="page" id="pg-km">
+    <div class="prow"><button class="p" onclick="openForm('km')"><svg class="ic"><use href="#i-plus"/></svg>Додати день</button></div>
+    <section class="panel" id="dkPanel"><h2>День</h2><div style="display:flex;flex-direction:column;gap:10px"><select id="dkCar" aria-label="Авто"></select><input id="dkDate" type="date" aria-label="Дата"><input id="dkKm" inputmode="decimal" placeholder="Пробіг за день, км"><input id="dkFuel" inputmode="decimal" placeholder="Заправлено, л"><select id="dkNote" aria-label="Маршрут"></select><textarea id="dkCom" rows="2" placeholder="Свій коментар"></textarea><input id="dkPhoto" type="file" accept="image/*"><div class="btns"><button class="p" onclick="addDayInline()">Додати день</button></div></div></section>
+    <section class="panel">
+      <h2><svg class="ic"><use href="#i-calc"/></svg>Калькулятор витрати</h2>
+      <div class="grid">
+        <div class="field"><label for="calcDist">Відстань, км</label><input id="calcDist" placeholder="0" inputmode="decimal"></div>
+        <div class="field"><label for="calcAvg">Витрата, л/100 км</label><input id="calcAvg" placeholder="0" inputmode="decimal"></div>
+        <div class="field full"><label for="calcLiters">Або літри</label><input id="calcLiters" placeholder="0" inputmode="decimal"></div>
+      </div>
+      <div class="btns"><button class="p" onclick="calcFuel()">Розрахувати</button></div>
+      <div id="calcResult" class="result" hidden></div>
+    </section>
+    <section class="panel">
+      <h2><svg class="ic"><use href="#i-cal"/></svg>Звіт за місяць</h2>
+      <div class="field"><label for="monthPick">Місяць</label><input id="monthPick" type="month"></div>
+      <div class="btns">
+        <button onclick="saveMonthReport('html')">HTML</button>
+        <button onclick="saveMonthReport('excel')">Звіт з фото</button>
+        <button onclick="saveMonthReport('view')"><svg class="ic"><use href="#i-eye"/></svg>Переглянути</button>
+      </div>
+    </section>
+    <div id="kmChart"></div>
+    <section class="panel">
+      <div id="kmTotals" class="m"></div>
+      <div id="kmList" style="display:flex;flex-direction:column;gap:12px"></div>
+    </section>
+  </div>
+
+  <div class="page" id="pg-chk"><div class="prow"><button class="p" onclick="openForm('chk')"><svg class="ic"><use href="#i-plus"/></svg>Чек-лист</button></div><div id="chkList" style="display:flex;flex-direction:column;gap:14px"></div></div>
+
+  <div class="page" id="pg-stats"><div id="statsBox" style="display:flex;flex-direction:column;gap:14px"></div></div>
+
+  <div class="page" id="pg-set"><div id="setBox" style="display:flex;flex-direction:column;gap:14px"></div></div>
+</div>
+
+<nav class="nav" id="nav" aria-label="Розділи">
+  <button data-nav="dash" onclick="showPage('dash')"><svg class="ic"><use href="#i-grid"/></svg><span class="lb">Дашборд</span></button>
+  <button data-nav="log" onclick="showPage('log')"><svg class="ic"><use href="#i-list"/></svg><span class="lb">Журнал</span></button>
+  <button data-nav="more" onclick="toggleMore()" aria-haspopup="true" aria-expanded="false"><svg class="ic" id="moreIc"><use href="#i-dots"/></svg><span class="lb" id="moreLb">Ще</span></button>
+</nav>
+<div id="scrim" class="scrim" hidden onclick="closeOverlays()"></div>
+<div id="more" class="more" hidden role="menu"></div>
+<div id="dial" class="dial" hidden></div>
+<button id="fab" type="button" aria-label="Додати" aria-expanded="false" onclick="toggleDial()"><span class="bars3"><i></i><i></i><i></i></span></button>
+
+<div id="sh" class="modal" hidden>
+  <div class="mscrim" onclick="closeSheet(1)"></div>
+  <section class="msheet" role="dialog" aria-modal="true" aria-labelledby="shT">
+    <header class="mh2" id="shH"><button class="x" onclick="closeSheet(1)" aria-label="Закрити"><svg class="ic"><use href="#i-x"/></svg></button><span class="hi" id="shI"></span><h3 id="shT"></h3></header>
+    <div class="mbody" id="shB"></div>
+    <footer class="mft" id="shF"></footer>
+  </section>
+</div>
+<div id="sh2" class="modal l2" hidden>
+  <div class="mscrim" onclick="closeSheet(2)"></div>
+  <section class="msheet" role="dialog" aria-modal="true" aria-labelledby="sh2T">
+    <header class="mh2" id="sh2H"><button class="x" onclick="closeSheet(2)" aria-label="Закрити"><svg class="ic"><use href="#i-x"/></svg></button><span class="hi" id="sh2I"></span><h3 id="sh2T"></h3></header>
+    <div class="mbody" id="sh2B"></div>
+    <footer class="mft" id="sh2F"></footer>
+  </section>
+</div>
+
+<div id="view" hidden>
+  <div class="in">
+    <div class="bar"><h2 id="viewTitle"></h2><button type="button" onclick="closeView()">Закрити</button></div>
+    <div class="doc" id="viewBody"></div>
+  </div>
+</div>
+<div id="toast" hidden></div>
+
+<script>
+const KEY = 'auto_book_v1';
+const $ = (id) => document.getElementById(id);
+const esc = (s) => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2,6);
+const num = (v) => { const n = parseFloat(String(v == null ? '' : v).replace(',', '.').trim()); return isNaN(n) ? 0 : n; };
+const today = () => { const d = new Date(); return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0'); };
+const fmtN = (n, d) => (n == null || n === '' || isNaN(n)) ? '—' : Number(n).toLocaleString((state.set && state.set.nfmt === 'en') ? 'en-US' : 'uk-UA', {minimumFractionDigits: d || 0, maximumFractionDigits: d || 0});
+const fdate = (s) => { const p = String(s || '').split('-'); if (p.length !== 3) return ''; const st = state.set || {}, f = st.dfmt || 'DD.MM.YYYY', y = st.year !== false;
+  if (f === 'YYYY-MM-DD') return y ? p.join('-') : p[1] + '-' + p[2]; if (f === 'MM/DD/YYYY') return p[1] + '/' + p[2] + (y ? '/' + p[0] : ''); return p[2] + '.' + p[1] + (y ? '.' + p[0] : ''); };
+const MONTHS = ['Січень','Лютий','Березень','Квітень','Травень','Червень','Липень','Серпень','Вересень','Жовтень','Листопад','Грудень'];
+const daysLeft = (date) => Math.round((new Date(date + 'T00:00:00') - new Date(today() + 'T00:00:00')) / 86400000);
+const ico = (n, cls) => `<svg class="ic${cls ? ' ' + cls : ''}"><use href="#i-${n}"/></svg>`;
+
+const CARS = [
+  ['Skoda','Octavia','1996–'],['Skoda','Fabia','1999–'],['Skoda','Superb','2001–'],['Skoda','Rapid','2012–'],['Skoda','Kodiaq','2016–'],['Skoda','Karoq','2017–'],
+  ['Volkswagen','Golf','1974–'],['Volkswagen','Passat','1973–'],['Volkswagen','Polo','1975–'],['Volkswagen','Tiguan','2007–'],['Volkswagen','Touareg','2002–'],['Volkswagen','Caddy','1979–'],['Volkswagen','Transporter','1950–'],
+  ['Toyota','Corolla','1966–'],['Toyota','Camry','1982–'],['Toyota','RAV4','1994–'],['Toyota','Land Cruiser','1951–'],['Toyota','Prius','1997–'],['Toyota','Yaris','1999–'],['Toyota','Avensis','1997–2018'],
+  ['Hyundai','i30','2007–'],['Hyundai','Tucson','2004–'],['Hyundai','Elantra','1990–'],['Hyundai','Santa Fe','2000–'],['Hyundai','Accent','1994–'],['Hyundai','Sonata','1985–'],
+  ['Kia','Ceed','2006–'],['Kia','Sportage','1993–'],['Kia','Rio','1999–'],['Kia','Sorento','2002–'],['Kia','Optima','2000–'],['Kia','Picanto','2004–'],
+  ['Renault','Megane','1995–'],['Renault','Logan','2004–'],['Renault','Duster','2010–'],['Renault','Scenic','1996–'],['Renault','Kangoo','1997–'],['Renault','Captur','2013–'],
+  ['Nissan','Qashqai','2006–'],['Nissan','X-Trail','2000–'],['Nissan','Juke','2010–'],['Nissan','Note','2004–'],['Nissan','Almera','1995–'],['Nissan','Leaf','2010–'],
+  ['Ford','Focus','1998–'],['Ford','Fiesta','1976–'],['Ford','Mondeo','1993–'],['Ford','Kuga','2008–'],['Ford','Transit','1965–'],['Ford','Fusion','2002–'],
+  ['Opel','Astra','1991–'],['Opel','Corsa','1982–'],['Opel','Insignia','2008–'],['Opel','Zafira','1999–'],['Opel','Vectra','1988–2008'],['Opel','Mokka','2012–'],
+  ['Chevrolet','Aveo','2002–'],['Chevrolet','Lacetti','2002–'],['Chevrolet','Cruze','2008–'],['Chevrolet','Captiva','2006–'],['Chevrolet','Spark','1998–'],
+  ['Daewoo','Lanos','1997–'],['Daewoo','Nexia','1994–'],['Daewoo','Matiz','1998–'],['ZAZ','Sens','2000–'],['ZAZ','Lanos','2005–'],
+  ['Mercedes-Benz','C-Class','1993–'],['Mercedes-Benz','E-Class','1993–'],['Mercedes-Benz','S-Class','1972–'],['Mercedes-Benz','GLC','2015–'],['Mercedes-Benz','Sprinter','1995–'],
+  ['BMW','3 Series','1975–'],['BMW','5 Series','1972–'],['BMW','X5','1999–'],['BMW','X3','2003–'],['BMW','1 Series','2004–'],
+  ['Audi','A4','1994–'],['Audi','A6','1994–'],['Audi','Q5','2008–'],['Audi','A3','1996–'],['Audi','Q7','2005–'],
+  ['Mazda','3','2003–'],['Mazda','6','2002–'],['Mazda','CX-5','2012–'],['Mazda','CX-3','2015–'],
+  ['Honda','Civic','1972–'],['Honda','CR-V','1995–'],['Honda','Accord','1976–'],['Honda','Jazz','2001–'],
+  ['Mitsubishi','Outlander','2001–'],['Mitsubishi','Lancer','1973–'],['Mitsubishi','ASX','2010–'],['Mitsubishi','Pajero','1982–'],
+  ['Peugeot','308','2007–'],['Peugeot','3008','2008–'],['Peugeot','208','2012–'],['Peugeot','Partner','1996–'],
+  ['Citroen','C4','2004–'],['Citroen','Berlingo','1996–'],['Citroen','C5','2001–'],
+  ['Volvo','XC60','2008–'],['Volvo','XC90','2002–'],['Volvo','S60','2000–'],['Volvo','V40','1995–'],
+  ['Subaru','Forester','1997–'],['Subaru','Outback','1994–'],['Subaru','Impreza','1992–'],
+  ['Suzuki','Vitara','1988–'],['Suzuki','SX4','2006–'],['Suzuki','Swift','1983–'],
+  ['Dacia','Logan','2004–'],['Dacia','Duster','2010–'],['Dacia','Sandero','2007–'],
+  ['Tesla','Model 3','2017–'],['Tesla','Model Y','2020–'],['Tesla','Model S','2012–'],
+  ['SEAT','Ibiza','1984–'],['SEAT','Leon','1999–'],['SEAT','Toledo','1991–'],['SEAT','Altea','2004–2015'],['SEAT','Arona','2017–'],['SEAT','Ateca','2016–'],['SEAT','Tarraco','2018–'],['SEAT','Cordoba','1993–2009'],['SEAT','Alhambra','1996–'],['SEAT','Exeo','2008–2013']
+];
+
+const ROUTES = [];
+const CATALOG = {
+  to: ['Заміна масла в двигуні','Масляний фільтр','Повітряний фільтр','Салонний фільтр','Паливний фільтр','Свічки запалювання','Свічки розжарювання','Промивання двигуна','Чистка дроселя','Заміна ламп'],
+  hodova: ['Амортизатори передні','Амортизатори задні','Пружини','Опори амортизаторів','Опорні підшипники','Сайлентблоки важелів','Кульові опори','Важелі підвіски','Стійки стабілізатора','Втулки стабілізатора','Рульові наконечники','Рульові тяги','Підшипники маточини','ШРУС зовнішній','ШРУС внутрішній','Пильники ШРУСа','Розвал-сходження'],
+  galma: ['Колодки передні','Колодки задні','Диски передні','Диски задні','Барабанні колодки','Гальмівна рідина','Гальмівні шланги','Супорт / ремкомплект','Ручник'],
+  ridyny: ['Антифриз','Рідина ГУР','Масло МКПП','Масло АКПП','Масло редуктора / моста','Ремінь ГРМ + ролики','Помпа','Ланцюг ГРМ','Ремінь генератора','Ролики приводу'],
+  inshi: ['Акумулятор','Щітки склоочисника','Діагностика','Інше']
+};
+
+let state = null;
+try { state = JSON.parse(localStorage.getItem(KEY) || 'null'); } catch (e) { state = null; }
+if (!state || typeof state !== 'object') state = {};
+function normalize() {
+  ['cars','services','rems','fuels','kms','exps'].forEach(k => { if (!Array.isArray(state[k])) state[k] = []; });
+  if (!state.ach || typeof state.ach !== 'object') state.ach = {};
+  ensureSet();
+}
+normalize();
+let storageWarned = false;
+const save = () => { try { localStorage.setItem(KEY, JSON.stringify(state)); return true; } catch (e) { return false; } };
+const trySave = save;
+function persist() { if (!save() && !storageWarned) { storageWarned = true; toast('Браузер не дає зберегти дані. Роби бекап.', true); } }
+function toast(t, err) {
+  const el = $('toast');
+  el.className = err ? 'err' : '';
+  el.innerHTML = ico(err ? 'alert' : 'check') + '<span>' + esc(t) + '</span>';
+  el.hidden = false;
+  clearTimeout(toast.t); toast.t = setTimeout(() => { el.hidden = true; }, 3200);
+}
+
+/* ---------- helpers on data ---------- */
+function curCar() {
+  let c = state.cars.find(x => x.id === state.curCar && !x.archived);
+  if (!c) { c = state.cars.find(x => !x.archived) || state.cars[0] || null; if (c) state.curCar = c.id; }
+  return c;
+}
+const cid = () => { const c = curCar(); return c ? String(c.id) : ''; };
+const mine = (list) => list.filter(x => String(x.carId) === cid());
+function odoNow(c) {
+  if (!c) return 0;
+  let m = num(c.odo);
+  state.fuels.concat(state.services).forEach(x => { if (String(x.carId) === String(c.id) && x.km > m) m = x.km; });
+  return m;
+}
+function avgFor(c) {
+  if (!c) return null;
+  const f = state.fuels.filter(x => String(x.carId) === String(c.id) && x.km > 0).sort((a,b) => a.km - b.km);
+  const fl = f.filter(x => x.full !== false);
+  if (fl.length >= 2) {
+    const km = fl[fl.length-1].km - fl[0].km;
+    const l = f.filter(x => x.km > fl[0].km && x.km <= fl[fl.length-1].km).reduce((s,x) => s + x.liters, 0);
+    if (km > 0 && l > 0) return l / km * 100;
+  }
+  const k = state.kms.filter(x => String(x.carId) === String(c.id));
+  const sk = k.reduce((s,x) => s + (+x.km||0), 0), sf = k.reduce((s,x) => s + (+x.fuel||0), 0);
+  return sk > 0 && sf > 0 ? sf / sk * 100 : null;
+}
+function lastFuel(c) {
+  const f = state.fuels.filter(x => String(x.carId) === String(c.id)).sort((a,b) => String(b.date).localeCompare(String(a.date)) || (b.km - a.km));
+  return f[0] || null;
+}
+function monthKm(c) {
+  const m = today().slice(0,7);
+  return state.kms.filter(k => String(k.carId) === String(c.id) && String(k.date||'').startsWith(m)).reduce((s,k) => s + (+k.km||0), 0);
+}
+function forecast(c) {
+  const avg = avgFor(c), last = lastFuel(c);
+  if (!avg || !c.tank || !last || !last.km) return null;
+  const range = c.tank / avg * 100;
+  const target = last.km + range;
+  const odo = odoNow(c);
+  const left = Math.max(0, Math.round(target - odo));
+  let when = '';
+  const f = state.fuels.filter(x => String(x.carId) === String(c.id) && x.km > 0).sort((a,b) => String(a.date).localeCompare(String(b.date)));
+  if (f.length >= 2) {
+    const days = (new Date(f[f.length-1].date) - new Date(f[0].date)) / 86400000;
+    const km = f[f.length-1].km - f[0].km;
+    if (days > 0 && km > 0) {
+      const d = new Date(); d.setDate(d.getDate() + Math.round(left / (km / days)));
+      when = fdate(d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0'));
+    }
+  }
+  return { target: Math.round(target), left, when };
+}
+const EV = {
+  fuel: { i:'fuel', c:'--c-fuel', list:'fuels' },
+  svc:  { i:'wrench', c:'--c-svc', list:'services' },
+  km:   { i:'gauge', c:'--c-km', list:'kms' },
+  exp:  { i:'wallet', c:'--c-exp', list:'exps' }
+};
+function events(c) {
+  const id = String(c.id), out = [];
+  state.fuels.filter(f => String(f.carId) === id).forEach(f => out.push({k:'fuel', id:f.id, date:f.date, title:(c.fuelType || 'Пальне') + ' · ' + f.liters + ' л', sub:fmtN(f.km) + ' км' + (f.full === false ? ' · частково' : '') + (f.station ? ' · ' + f.station : ''), amt:fmtN(f.sum, 2) + ' грн'}));
+  state.services.filter(s => String(s.carId) === id).forEach(s => out.push({k:'svc', id:s.id, date:s.date, title:s.what, sub:fmtN(s.km) + ' км', amt:fmtN(s.cost, 2) + ' грн'}));
+  state.kms.filter(k => String(k.carId) === id).forEach(k => out.push({k:'km', id:k.id, date:k.date, title:k.note || 'Пробіг за день', sub:(k.fuel ? k.fuel + ' л' : 'без заправки'), amt:fmtN(k.km, 1) + ' км'}));
+  state.exps.filter(e => String(e.carId) === id).forEach(e => out.push({k:'exp', id:e.id, date:e.date, title:e.title, sub:(e.kind === 'inc' ? 'Дохід' : 'Витрата') + (e.cat ? ' · ' + e.cat : ''), amt:(e.kind === 'inc' ? '+' : '') + fmtN(e.sum, 2) + ' грн'}));
+  return out.sort((a,b) => String(b.date).localeCompare(String(a.date)));
+}
+function evRow(e, del) {
+  const m = EV[e.k];
+  return `<li class="ev" style="--c:var(${m.c})"><span class="evi">${ico(m.i)}</span>
+    <div style="min-width:0"><div class="t">${esc(e.title)}</div><div class="m">${esc(e.sub)}</div></div>
+    <div class="evr"><div class="n">${esc(e.amt)}</div><div class="m">${fdate(e.date)}</div>${del ? `<button class="sm danger" onclick="ask(this,'${m.list}','${e.id}')">✕</button>` : ''}</div></li>`;
+}
+function remItems() {
+  const items = [];
+  state.rems.forEach(r => { const car = state.cars.find(c => String(c.id) === String(r.carId)) || curCar(), rep = !!(r.everyD || r.everyKm);
+    if (r.date) items.push({title:r.title, date:r.date, del:r.id, rep});
+    if (r.km) items.push({title:r.title + (car ? ' · ' + car.name : ''), km:num(r.km), odo:odoNow(car), del:r.date ? '' : r.id, rep}); });
+  state.cars.filter(c => !c.archived).forEach(c => {
+    [['osago','ОСЦПВ'],['kasko','КАСКО'],['tech','Техогляд']].forEach(p => { if (c[p[0]]) items.push({title:p[1] + ' · ' + c.name, date:c[p[0]]}); });
+    if (num(c.nextTo)) items.push({title:'Наступне ТО · ' + c.name, km:num(c.nextTo), odo:odoNow(c)});
+  });
+  items.forEach(it => {
+    if (it.date) { const d = daysLeft(it.date); it.st = d < 0 ? 'bad' : d <= state.set.warnDays ? 'warn' : 'ok'; it.txt = d < 0 ? 'прострочено ' + (-d) + ' дн.' : d === 0 ? 'сьогодні' : 'через ' + d + ' дн.'; it.o = d; }
+    else { const l = it.km - it.odo; it.st = l < 0 ? 'bad' : l <= state.set.warnKm ? 'warn' : 'ok'; it.txt = l < 0 ? 'перебір ' + fmtN(-l) + ' км' : 'ще ' + fmtN(l) + ' км'; it.o = l / 50; }
+  });
+  return items.sort((a,b) => a.o - b.o);
+}
+const VT = [['car','Легкове авто','car'],['truck','Вантажівка','truck'],['moto','Мотоцикл','moto'],['bus','Автобус','bus'],['trailer','Причіп','trailer'],['special','Спецтехніка','special'],['bike','Велосипед','bike'],['scooter','Скутер','scooter'],['ev','Електротранспорт','bolt']];
+const vtIcon = (t) => (VT.find(x => x[0] === t) || VT[0])[2];
+const DRV = {'Передній':'FWD','Задній':'RWD','Повний (AWD)':'AWD','Повний (4WD)':'4WD'};
+function logoHtml(c) { if (c.photo) return `<img alt="" src="${c.photo}">`; const lg = (typeof LOGO !== 'undefined') && LOGO[c.make];
+  const fb = ico(vtIcon(c.vtype)); if (!lg) return fb;
+  return `<img class="nolb" alt="" src="https://cardrive.com.ua/storage/v1/object/public/catalog/marks/${lg}.webp" style="object-fit:contain;padding:10px;background:#fff" onerror="this.style.display='none';this.nextElementSibling.style.display=''">` + fb.replace('<svg', '<svg style="display:none"'); }
+
+/* ---------- pages ---------- */
+const PAGES = {
+  dash:{t:'Авто', s:'Сервісна книжка і нагадування'}, log:{t:'Журнал подій', s:'Усі записи по авто'},
+  cars:{t:'Авто', s:'Транспорт і пошук моделі'}, service:{t:'ТО', s:'Обслуговування і ремонт'},
+  rem:{t:'Терміни', s:'Нагадування'}, fuel:{t:'Паливо', s:'Заправки і витрата'},
+  km:{t:'Пробіг', s:'Дні, калькулятор, звіти'}, chk:{t:'Чек-листи', s:'Перевірки перед поїздкою'}, stats:{t:'Статистика', s:'Витрати і пробіг'}, set:{t:'Налаштування', s:'Вигляд, формат, дані'}
+};
+const MORE = [['cars','car','Авто'],['service','wrench','ТО'],['rem','bell','Терміни'],['fuel','fuel','Паливо'],['km','gauge','Пробіг'],['chk','check','Чек-листи'],['stats','chart','Статистика'],['set','gear','Налаштування']];
+let page = 'dash', logFilter = 'all', carTab = 'all';
+function showPage(p) {
+  if (!PAGES[p]) p = 'dash';
+  page = p; closeOverlays();
+  document.querySelectorAll('.page').forEach(x => x.classList.toggle('on', x.id === 'pg-' + p));
+  $('pgTitle').textContent = PAGES[p].t; $('pgSub').textContent = PAGES[p].s;
+  document.querySelectorAll('#nav [data-nav]').forEach(b => b.classList.remove('on'));
+  const mm = MORE.find(m => m[0] === p);
+  if (mm) { const b = document.querySelector('#nav [data-nav=more]'); b.classList.add('on'); $('moreIc').innerHTML = `<use href="#i-${mm[1]}"/>`; $('moreLb').textContent = mm[2]; }
+  else { document.querySelector('#nav [data-nav=' + p + ']').classList.add('on'); $('moreIc').innerHTML = '<use href="#i-dots"/>'; $('moreLb').textContent = 'Ще'; }
+  try { history.replaceState(null, '', '#' + p); } catch (e) {}
+  window.scrollTo(0, 0);
+}
+function closeOverlays() {
+  $('scrim').hidden = true; $('more').hidden = true; $('dial').hidden = true;
+  $('fab').setAttribute('aria-expanded', 'false');
+  document.querySelector('#nav [data-nav=more]').setAttribute('aria-expanded', 'false');
+}
+function toggleMore() {
+  const open = $('more').hidden;
+  closeOverlays();
+  if (!open) return;
+  $('more').innerHTML = MORE.map(m => `<button role="menuitem" ${page === m[0] ? 'aria-current="page"' : ''} onclick="showPage('${m[0]}')">${ico(m[1])}${m[2]}</button>`).join('');
+  $('more').hidden = false; $('scrim').hidden = false;
+  document.querySelector('#nav [data-nav=more]').setAttribute('aria-expanded', 'true');
+}
+const DIAL = [['rem','Нагадування','bell','--c-rem'],['km','Пробіг','gauge','--c-km'],['exp','Витрати/Доходи','wallet','--c-exp'],['svc','Сервіс','wrench','--c-svc'],['fuel','Заправка','fuel','--c-fuel']];
+function toggleDial() {
+  const open = $('dial').hidden;
+  closeOverlays();
+  if (!open) return;
+  $('dial').innerHTML = DIAL.map((d, i) => `<button style="animation-delay:${(DIAL.length - i) * 30}ms" onclick="closeOverlays();openForm('${d[0]}')"><span class="lab">${d[1]}</span><span class="tile2" style="background:var(${d[3]})">${ico(d[2])}</span></button>`).join('');
+  $('dial').hidden = false; $('scrim').hidden = false;
+  $('fab').setAttribute('aria-expanded', 'true');
+}
+
+/* ---------- render ---------- */
+function priceChart(list) {
+  const pts = list.filter(f => f.liters > 0 && f.sum > 0).sort((a,b) => String(a.date).localeCompare(String(b.date))).map(f => ({d:f.date, p:f.sum / f.liters}));
+  if (pts.length < 2) return '<div class="empty" style="text-align:center;padding:26px 0">Немає даних про ціни</div>';
+  const W = 320, H = 150, L = 38, R = 10, T = 10, B = 24;
+  let lo = Math.min(...pts.map(p => p.p)), hi = Math.max(...pts.map(p => p.p));
+  if (hi - lo < 0.5) { lo -= 0.5; hi += 0.5; }
+  const pad = (hi - lo) * 0.1; lo -= pad; hi += pad;
+  const x = (i) => L + (W - L - R) * (pts.length === 1 ? 0.5 : i / (pts.length - 1));
+  const y = (v) => T + (H - T - B) * (1 - (v - lo) / (hi - lo));
+  let g = '';
+  [0, 0.5, 1].forEach(t => { const v = lo + (hi - lo) * t, yy = y(v); g += `<line class="gl" x1="${L}" x2="${W - R}" y1="${yy}" y2="${yy}"/><text x="${L - 6}" y="${yy + 4}" text-anchor="end">${v.toFixed(1)}</text>`; });
+  const path = pts.map((p, i) => (i ? 'L' : 'M') + x(i).toFixed(1) + ' ' + y(p.p).toFixed(1)).join(' ');
+  const dots = pts.map((p, i) => i === pts.length - 1 ? `<circle class="pe" cx="${x(i).toFixed(1)}" cy="${y(p.p).toFixed(1)}" r="5"/>` : `<circle class="pt" cx="${x(i).toFixed(1)}" cy="${y(p.p).toFixed(1)}" r="3.2"/>`).join('');
+  const lab = `<text x="${L}" y="${H - 6}">${fdate(pts[0].d).slice(0,5)}</text><text x="${W - R}" y="${H - 6}" text-anchor="end">${fdate(pts[pts.length-1].d).slice(0,5)}</text>`;
+  return `<svg class="pchart" viewBox="0 0 ${W} ${H}" role="img" aria-label="Ціна пального за літр">${g}<path class="ln" d="${path}"/>${dots}${lab}</svg><div class="m">Остання ціна: ${pts[pts.length-1].p.toFixed(2)} грн/л</div>`;
+}
+function renderDash() {
+  const c = curCar(), el = $('dash');
+  if (!c) {
+    el.innerHTML = `<section class="hero" style="align-items:flex-start"><div class="hname">Додай перше авто</div><div class="hspec">Після цього зʼявляться пробіг, витрата, прогнози і журнал подій.</div><button class="p" onclick="openBrandList()">${ico('plus')}Додати авто</button></section>`;
+    return;
+  }
+  const odo = odoNow(c), avg = avgFor(c), mk = monthKm(c), fc = forecast(c), last = lastFuel(c);
+  const spec = [c.year, c.engVol ? fmtN(c.engVol, 1) + ' л' : '', c.power ? c.power + ' к.с.' : '', c.trans, DRV[c.drive]].filter(Boolean).join(' · ') || [c.plate, c.make].filter(Boolean).join(' · ') || 'Додай технічні дані в картці авто';
+  const badge = remItems().filter(r => r.st !== 'ok').length;
+  const pct = last && c.tank ? Math.min(100, last.liters / num(c.tank) * 100) : 0;
+  const ev = events(c).slice(0, 3);
+  const prices = mine(state.fuels);
+  el.innerHTML = `
+  <section class="hero">
+    <div class="hrow">
+      <button class="logo" onclick="openCarPicker()" aria-label="Обрати авто">${logoHtml(c)}</button>
+      <button class="hmain" onclick="openCarPicker()"><div class="hname">${esc(c.name)}</div><div class="hspec">${esc(spec)}</div></button>
+      <button class="bell" onclick="showPage('rem')" aria-label="Терміни">${ico('bell')}${badge ? `<b>${badge}</b>` : ''}</button>
+    </div>
+    <div class="hfuel"><span>${esc(c.fuelType || 'Пальне')}</span><b>${last ? fmtN(last.liters, 1) : '—'} / ${c.tank ? fmtN(num(c.tank)) : '—'} л</b></div>
+    <div class="gauge" role="img" aria-label="Остання заправка від обсягу бака"><i style="width:${pct.toFixed(0)}%"></i></div>
+  </section>
+  <section class="tiles">
+    <button class="tile" onclick="showPage('fuel')"><div class="th">${ico('bolt')}Витрата${ico('chev')}</div><div class="tv">${avg ? fmtN(avg, 1) + '<u>л/100</u>' : '—'}</div></button>
+    <button class="tile" onclick="showPage('km')"><div class="th">${ico('gauge')}Одометр${ico('chev')}</div><div class="tv">${odo ? fmtN(odo) : '—'}<u>км</u></div><div class="m">за ${MONTHS[new Date().getMonth()]}: ${fmtN(mk)} км</div></button>
+  </section>
+  <div class="sech"><h3>Прогнози</h3></div>
+  <section class="fcard"><div class="th">${ico('fuel')}Наступна заправка</div>
+    ${fc ? `<div class="big">≈ ${fmtN(fc.target)} км</div><div class="m">через ~${fmtN(fc.left)} км${fc.when ? ' · приблизно ' + fc.when : ''}</div>` : `<div class="big">—</div><div class="m">Потрібні об'єм бака і дві заправки з пробігом</div>`}
+  </section>
+  <div class="sech"><h3>Останні події</h3><button class="link" onclick="showPage('log')">Журнал подій ${ico('chev')}</button></div>
+  ${ev.length ? `<ul class="evl">${ev.map(e => evRow(e, false)).join('')}</ul>` : `<section class="panel"><div class="empty">Ще немає записів</div></section>`}
+  <section class="panel"><h2>${ico('trend')}Ціна пального</h2>${priceChart(prices)}</section>`;
+}
+function renderLog() {
+  const c = curCar(), ch = [['all','Усі'],['fuel','Заправки'],['svc','Сервіс'],['km','Пробіг'],['exp','Витрати']];
+  $('logChips').innerHTML = ch.map(x => `<button class="chip" aria-pressed="${logFilter === x[0]}" onclick="logFilter='${x[0]}';renderLog()">${x[1]}</button>`).join('');
+  if (!c) { $('logList').innerHTML = '<li class="panel"><span class="empty">Додай авто, щоб вести журнал</span></li>'; return; }
+  const list = events(c).filter(e => logFilter === 'all' || e.k === logFilter);
+  let html = '', day = '';
+  list.forEach(e => { if (e.date !== day) { day = e.date; html += `<li class="mh" style="margin-top:6px"><span>${fdate(day)}</span><span></span></li>`; } html += evRow(e, true); });
+  $('logList').innerHTML = html || '<li class="panel"><span class="empty">Записів немає</span></li>';
+}
+function renderCars() {
+  const act = state.cars.filter(c => !c.archived), arc = state.cars.filter(c => c.archived);
+  $('carTabs').innerHTML = [['all','Всі (' + state.cars.length + ')'],['act','Активні (' + act.length + ')'],['arc','Архів (' + arc.length + ')']].map(t => `<button aria-pressed="${carTab === t[0]}" onclick="carTab='${t[0]}';renderCars()">${t[1]}</button>`).join('');
+  const list = carTab === 'act' ? act : carTab === 'arc' ? arc : state.cars;
+  $('carList').innerHTML = list.map(c => `
+  <article class="vcard">
+    <div class="vtop">
+      <div class="logo">${logoHtml(c)}</div>
+      <div class="vinfo"><b>${esc(c.name)}${c.year ? ' (' + esc(c.year) + ')' : ''}</b>
+        <div class="m">${esc([c.body, c.make, c.plate].filter(Boolean).join(' · ') || 'без деталей')}</div>
+        <div class="vodo">${odoNow(c) ? fmtN(odoNow(c)) : '—'}<u>км</u></div>
+        ${c.id === state.curCar && !c.archived ? '<span class="pill">Активне</span>' : ''}</div>
+      
+    </div>
+    <div class="vmenu" id="vm-${c.id}">
+      ${c.archived ? '' : `<button class="sm" onclick="state.curCar='${c.id}';persist();render()">Зробити активним</button>`}
+      <button class="sm" onclick="openForm('car','${c.id}')">Змінити</button>
+      <button class="sm" onclick="archiveCar('${c.id}')">${c.archived ? 'З архіву' : 'В архів'}</button>
+      <button class="sm danger" onclick="ask(this,'cars','${c.id}')">Видалити</button>
+    </div>
+    <div class="vgrid">
+      <div><div class="k">Двигун</div><div class="v">${c.engVol ? fmtN(c.engVol, 1) + ' л' : '—'}</div></div>
+      <div><div class="k">Потужність</div><div class="v">${c.power ? esc(c.power) + ' к.с.' : '—'}</div></div>
+      <div><div class="k">Пальне</div><div class="v">${esc(c.fuelType || '—')}</div></div>
+      <div><div class="k">Трансмісія</div><div class="v">${esc(c.trans || '—')}</div></div>
+      <div><div class="k">Привід</div><div class="v">${esc((c.drive || '—').replace(/ \(.*\)/, ''))}</div></div>
+      <div><div class="k">Баки</div><div class="v">${c.tank ? fmtN(num(c.tank)) + ' л' : '—'}</div></div>
+    </div>
+  </article>`).join('') || '<section class="panel"><div class="empty">Авто немає. Натисни «Додати авто» або знайди модель нижче.</div></section>';
+}
+function archiveCar(id) { const c = state.cars.find(x => x.id === id); if (!c) return; c.archived = !c.archived; if (c.archived && state.curCar === id) state.curCar = ''; persist(); render(); }
+function renderService() {
+  const c = curCar();
+  const svcs = c ? mine(state.services).sort((a,b) => String(b.date).localeCompare(String(a.date))) : [];
+  const months = {};
+  svcs.forEach(s => { const m = String(s.date || '').slice(0,7); (months[m] = months[m] || []).push(s); });
+  $('svcList').innerHTML = Object.keys(months).sort().reverse().map(m => {
+    const list = months[m], total = list.reduce((s,x) => s + (+x.cost||0), 0);
+    const rows = list.map(s => `<li><div><div class="t">${esc(s.what)}</div><div class="m">${esc(s.date)} · ${s.km||0} км</div>${s.photo ? `<img class="photo" alt="Чек" src="${s.photo}">` : ''}</div><div class="side"><div class="n">${s.cost||0} грн</div><button class="sm danger" onclick="ask(this,'services','${s.id}')">✕</button></div></li>`).join('');
+    return `<section class="panel"><div class="mh"><span>${esc(m)}</span><span>${list.length} зап. · ${total} грн</span></div><ul class="list">${rows}</ul></section>`;
+  }).join('') || '<section class="panel"><div class="empty">Записів немає</div></section>';
+}
+function renderRem() {
+  $('remList').innerHTML = remItems().map(r => `<li><div><div class="t">${esc(r.title)}</div><div class="m ${r.st}">${r.date ? esc(fdate(r.date)) + ' · ' : ''}${r.txt}</div></div><div class="side">${r.del ? `<button class="sm" onclick="${r.rep ? `doneRem('${r.del}')` : `ask(this,'rems','${r.del}')`}">Виконано</button>` : '<span class="m">з картки авто</span>'}</div></li>`).join('') || '<li><div class="empty">Немає термінів</div></li>';
+}
+function renderFuel() {
+  const c = curCar(), f = c ? mine(state.fuels).sort((a,b) => String(b.date).localeCompare(String(a.date)) || (b.km - a.km)) : [];
+  const a = c ? avgFor(c) : null;
+  $('fuelStats').textContent = 'Середня витрата: ' + (a == null ? '—' : a.toFixed(1) + ' л/100 км');
+  $('fuelList').innerHTML = f.map(x => `<li><div><div class="t">${x.liters} л</div><div class="m">${esc(x.date)} · ${x.km} км${x.full === false ? ' · частково' : ''}${x.station ? ' · ' + esc(x.station) : ''}${x.pay ? ' · ' + esc(x.pay) : ''}${x.liters && x.sum ? ' · ' + (x.sum / x.liters).toFixed(2) + ' грн/л' : ''}</div></div><div class="side"><div class="n">${x.sum} грн</div><button class="sm danger" onclick="ask(this,'fuels','${x.id}')">✕</button></div></li>`).join('') || '<li><div class="empty">Заправок немає</div></li>';
+  $('fuelPrice').innerHTML = priceChart(f);
+}
+function renderKm() {
+  const c = curCar(), kms = c ? mine(state.kms).sort((a,b) => String(b.date).localeCompare(String(a.date))) : [];
+  const sk = kms.reduce((s,k) => s + (+k.km||0), 0), sf = kms.reduce((s,k) => s + (+k.fuel||0), 0);
+  $('kmTotals').textContent = `Разом: ${sk} км · ${sf.toFixed(1)} л · середнє ${sk > 0 && sf > 0 ? (sf / sk * 100).toFixed(1) : '—'} л/100 км`;
+  const cur = today().slice(0,7), days = kms.filter(k => String(k.date||'').startsWith(cur)).slice().sort((a,b) => String(a.date).localeCompare(String(b.date)));
+  if (days.length) {
+    const max = Math.max(...days.map(d => +d.km||0), 1);
+    $('kmChart').innerHTML = `<section class="panel"><h2>${ico('gauge')}Пробіг за ${esc(cur)}</h2><div class="bar2">${days.map(d => `<div><span>${d.km||0}</span><i style="height:${Math.max(4, Math.round((+d.km||0) / max * 120))}px"></i><span>${esc(String(d.date||'').slice(8))}</span></div>`).join('')}</div></section>`;
+  } else $('kmChart').innerHTML = '';
+  const months = {};
+  kms.forEach(k => { const m = String(k.date || '').slice(0,7); (months[m] = months[m] || []).push(k); });
+  $('kmList').innerHTML = Object.keys(months).sort().reverse().map(m => {
+    const d = months[m], mk = d.reduce((s,k) => s + (+k.km||0), 0), mf = d.reduce((s,k) => s + (+k.fuel||0), 0);
+    const rows = d.map(k => `
+      <details class="day"><summary><span class="d">${esc(k.date)}</span><span class="n">${k.km||0} км · ${k.fuel||0} л</span></summary>
+        <div class="body"><div class="m">${esc(k.note || 'без примітки')}</div>${k.photo ? `<img class="photo" alt="Фото" src="${k.photo}">` : '<div class="m">Фото немає</div>'}
+        <div class="btns"><button class="sm" onclick="openForm('km','${k.id}')">Змінити</button><button class="sm danger" onclick="ask(this,'kms','${k.id}')">Видалити</button></div></div></details>`).join('');
+    return `<div><div class="mh"><span>${esc(m)}</span><span>${mk} км · ${mf.toFixed(1)} л</span></div>${rows}</div>`;
+  }).join('') || '<div class="empty">Записів немає</div>';
+}
+function renderStats() {
+  const c = curCar(), el = $('statsBox');
+  if (!c) { el.innerHTML = '<section class="panel"><div class="empty">Додай авто, щоб побачити статистику</div></section>'; return; }
+  const sum = (a, f) => a.reduce((s,x) => s + (+f(x)||0), 0);
+  const fuel = sum(mine(state.fuels), x => x.sum), svc = sum(mine(state.services), x => x.cost);
+  const exp = sum(mine(state.exps).filter(e => e.kind !== 'inc'), x => x.sum), inc = sum(mine(state.exps).filter(e => e.kind === 'inc'), x => x.sum);
+  const total = fuel + svc + exp, odo = odoNow(c);
+  const f = mine(state.fuels).filter(x => x.km > 0).sort((a,b) => a.km - b.km);
+  const dist = f.length >= 2 ? f[f.length-1].km - f[0].km : 0;
+  const mx = Math.max(fuel, svc, exp, 1);
+  const row = (n, v, col) => `<div class="brow" style="--c:var(${col})"><span>${n}</span><div class="tr"><i style="width:${(v / mx * 100).toFixed(0)}%"></i></div><span class="n">${fmtN(v)} грн</span></div>`;
+  const ms = {};
+  [[mine(state.fuels), x => x.sum],[mine(state.services), x => x.cost],[mine(state.exps).filter(e => e.kind !== 'inc'), x => x.sum]].forEach(p => p[0].forEach(x => { const m = String(x.date||'').slice(0,7); if (m) ms[m] = (ms[m]||0) + (+p[1](x)||0); }));
+  const mk = Object.keys(ms).sort().slice(-6), mm = Math.max(...mk.map(k => ms[k]), 1);
+  el.innerHTML = `
+  <section class="tiles">
+    <div class="tile"><div class="th">${ico('wallet')}Витрати</div><div class="tv">${fmtN(total)}<u>грн</u></div></div>
+    <div class="tile"><div class="th">${ico('gauge')}Одометр</div><div class="tv">${odo ? fmtN(odo) : '—'}<u>км</u></div>${dist > 0 ? `<div class="m">${fmtN((fuel + svc) / dist, 2)} грн/км</div>` : ''}</div>
+  </section>
+  <section class="panel"><h2>${ico('chart')}За категоріями</h2><div class="bars">${row('Паливо', fuel, '--c-fuel')}${row('Сервіс', svc, '--c-svc')}${row('Інше', exp, '--c-exp')}</div>${inc ? `<div class="m">Доходи: ${fmtN(inc)} грн</div>` : ''}</section>
+  <section class="panel"><h2>${ico('cal')}По місяцях</h2>${mk.length ? `<div class="bar2">${mk.map(k => `<div style="width:44px;flex-basis:44px"><span>${fmtN(ms[k])}</span><i style="height:${Math.max(4, Math.round(ms[k] / mm * 110))}px;width:26px"></i><span>${k.slice(5)}.${k.slice(2,4)}</span></div>`).join('')}</div>` : '<div class="empty">Немає даних</div>'}</section>`;
+}
+function render() {
+  curCar();
+  renderDash(); renderLog(); renderCars(); renderService(); renderRem(); renderFuel(); renderKm(); renderStats();
+}
+
+/* ---------- search ---------- */
+function searchCars() {
+  const q = ($('carSearch').value || '').toLowerCase().trim(), box = $('carResults');
+  if (!q) { box.innerHTML = ''; box.hidden = true; return; }
+  const found = CARS.filter(([b,m]) => (b + ' ' + m).toLowerCase().includes(q)).slice(0, 20);
+  box.hidden = false;
+  box.innerHTML = found.map(([b,m,y]) => `<div class="pick" data-b="${esc(b)}" data-m="${esc(m)}" data-y="${esc(y)}" onclick="pickCar(this.dataset.b,this.dataset.m,this.dataset.y)"><div><b>${esc(b)} ${esc(m)}</b><div class="m">${esc(y)}</div></div><span class="m">обрати</span></div>`).join('') || '<div class="pick"><span class="m">Нічого не знайдено</span></div>';
+}
+function pickCar(b, m, y) {
+  $('carSearch').value = ''; $('carResults').innerHTML = ''; $('carResults').hidden = true;
+  openForm('car', null, { make: b, model: m, year: (String(y).match(/\d{4}/) || [''])[0] });
+}
+
+/* ---------- sheets ---------- */
+function openSheet(layer, o) {
+  const p = layer === 2 ? 'sh2' : 'sh';
+  $(p + 'H').style.setProperty('--c', 'var(' + (o.c || '--accent') + ')');
+  $(p + 'I').innerHTML = o.icon ? ico(o.icon) : '';
+  $(p + 'T').textContent = o.title;
+  $(p + 'B').innerHTML = o.body;
+  $(p + 'F').innerHTML = o.footer;
+  $(p + 'F').hidden = !o.footer;
+  $(p).hidden = false;
+  document.body.style.overflow = 'hidden';
+  if (o.after) o.after();
+}
+function closeSheet(layer) {
+  $(layer === 2 ? 'sh2' : 'sh').hidden = true;
+  if ($('sh').hidden && $('sh2').hidden) document.body.style.overflow = '';
+  if (layer === 1) { formKind = null; formEditId = null; }
+}
+function closeView() { $('view').hidden = true; }
+document.addEventListener('keydown', (e) => {
+  if (e.key !== 'Escape') return;
+  if (!$('sh2').hidden) closeSheet(2); else if (!$('sh').hidden) closeSheet(1); else if (!$('view').hidden) closeView(); else closeOverlays();
+});
+const FOOT = (label) => `<button onclick="closeSheet(1)">Скасувати</button><button class="p" onclick="submitForm()">${label || 'Зберегти'}</button>`;
+const ACH = {
+  car:{t:'Перше авто', s:'Додав першу машину', i:'car', c:'--c-car'},
+  fuel:{t:'Перша заправка', s:'Записав перше пальне', i:'fuel', c:'--c-fuel'},
+  svc:{t:'Перший сервіс', s:'Записав перше обслуговування', i:'wrench', c:'--c-svc'},
+  km:{t:'Перший пробіг', s:'Записав перший день', i:'gauge', c:'--c-km'},
+  rem:{t:'Перше нагадування', s:'Налаштував перший термін', i:'bell', c:'--c-rem'},
+  exp:{t:'Перший запис витрат', s:'Додав першу витрату чи дохід', i:'wallet', c:'--c-exp'}
+};
+function grant(k) {
+  if (state.ach[k] || !ACH[k]) return;
+  state.ach[k] = true; persist();
+  const a = ACH[k];
+  setTimeout(() => openSheet(2, { title: '', icon: '', c: a.c,
+    body: `<div class="ach" style="display:flex;flex-direction:column;gap:6px;--c:var(${a.c})"><div class="m" style="display:flex;align-items:center;gap:6px;font-weight:700;color:var(--c-svc)">${ico('trophy')}Нове досягнення!</div><div class="big">${ico(a.i)}</div><h4>${a.t}</h4><div class="m">${a.s}</div></div>`,
+    footer: `<button class="p" onclick="closeSheet(2)">Чудово</button>` }), 350);
+}
+function openCarPicker() {
+  const list = state.cars.filter(c => !c.archived);
+  openSheet(2, { title: 'Обрати авто', icon: 'car', c: '--c-car',
+    body: list.map(c => `<button class="opt" role="radio" aria-checked="${c.id === state.curCar}" onclick="state.curCar='${c.id}';persist();closeSheet(2);render()">${ico(vtIcon(c.vtype))}<span>${esc(c.name)}</span><span class="rd">${ico('check')}</span></button>`).join('') + `<button class="opt" onclick="closeSheet(2);openBrandList()">${ico('plus')}<span>Додати авто</span></button>`,
+    footer: `<button onclick="closeSheet(2)">Скасувати</button><button onclick="closeSheet(2);openForm('car',state.curCar)">Змінити</button><button class="p" onclick="closeSheet(2);openBrandList()">+ Авто</button>` });
+}
+function pickVType() {
+  const cur = $('cfType').value || 'car';
+  openSheet(2, { title: 'Тип', icon: '', c: '--accent',
+    body: `<div><h3 style="margin:0;font:700 26px var(--f-display)">Оберіть тип</h3><div class="m">Від типу залежатимуть поля та підказки</div></div>` + VT.map(v => `<button class="opt" role="radio" aria-checked="${v[0] === cur}" onclick="setVType('${v[0]}')">${ico(v[2])}<span>${v[1]}</span><span class="rd">${ico('check')}</span></button>`).join(''),
+    footer: `<button onclick="closeSheet(2)">Скасувати</button>` });
+}
+function setVType(t) { $('cfType').value = t; $('cfTypeLb').innerHTML = ico(vtIcon(t)) + '<span>' + esc(VT.find(v => v[0] === t)[1]) + '</span>'; closeSheet(2); }
+
+/* ---------- forms ---------- */
+let formKind = null, formEditId = null, pickedItems = [];
+const optList = (arr, sel, ph) => (ph ? `<option value="">${ph}</option>` : '') + arr.map(x => `<option ${x === sel ? 'selected' : ''}>${esc(x)}</option>`).join('');
+const FUELS = ['Бензин','Дизель','Газ','Газ + Бензин','Електро','Гібрид'], ENGS = ['Бензин','Газ','Дизель','Електрика','Гібрид'];
+const TRANS = ['Механічна','Автоматична','Роботизована','Варіаторна'], DRIVES = ['Передній','Задній','Повний (AWD)','Повний (4WD)'];
+const BODIES = ['Седан','Хетчбек','Позашляховик','Пікап','Купе','Кабріолет','Універсал','Мінівен'];
+const COLORS = ['Сірий','Чорний','Білий','Сріблястий','Синій','Червоний','Зелений','Жовтий','Коричневий','Інший'];
+const brands = () => [...new Set(CARS.map(c => c[0]))];
+
+function openForm(kind, id, pre) {
+  if (kind !== 'car' && kind !== 'rem' && kind !== 'chk' && !curCar()) { toast('Спочатку додай авто', true); openBrandList(); return; }
+  closeOverlays();
+  formKind = kind; formEditId = id || null; pickedItems = [];
+  const f = FORMS[kind];
+  const data = f.html(id, pre || {});
+  openSheet(1, { title: data.title, icon: f.icon, c: f.c, body: data.body, footer: FOOT(), after: data.after });
+}
+async function submitForm() {
+  const k = formKind, edit = !!formEditId;
+  if (!k) return;
+  const ok = await FORMS[k].submit(formEditId);
+  if (!ok) return;
+  closeSheet(1);
+  render();
+  toast(k === 'car' ? 'Авто збережено' : 'Подію збережено');
+  if (!edit) grant(k);
+}
+const F = (id, label, inner, full) => `<div class="field${full ? ' full' : ''}"><label for="${id}">${label}</label>${inner}</div>`;
+const FORMS = {
+  fuel: { icon:'fuel', c:'--c-fuel',
+    html: () => { const c = curCar(); return { title:'Нова заправка', after:() => { const u = () => { const l = num($('fL').value), s = num($('fSum').value); $('fPrice').textContent = l > 0 && s > 0 ? 'Ціна за літр: ' + (s / l).toFixed(2) + ' грн' : ''; }; $('fL').oninput = $('fSum').oninput = u; },
+      body: `<section class="card2"><div class="grid">
+        ${F('fDate','Дата','<input id="fDate" type="date" value="' + today() + '">')}
+        ${F('fKm','Пробіг, км','<input id="fKm" inputmode="numeric" value="' + (odoNow(c) || '') + '">')}
+        ${F('fL','Літри','<input id="fL" inputmode="decimal" placeholder="0">')}
+        ${F('fSum','Сума, грн','<input id="fSum" inputmode="decimal" placeholder="0">')}
+        ${F('fFull','Повний бак','<select id="fFull"><option value="1">Так</option><option value="0">Ні, частково</option></select>')}
+        ${F('fType','Пальне','<select id="fType">' + optList(FUELS, c && c.fuelType, '—') + '</select>')}
+        ${F('fStation','АЗС','<input id="fStation" placeholder="WOG, OKKO...">')}
+        ${F('fPay','Оплата','<select id="fPay">' + optList(['Картка','Готівка','Талони','Інше'], '', '—') + '</select>')}
+        <div class="m full" id="fPrice"></div></div></section>` }; },
+    submit: () => { const l = num($('fL').value); if (!l) { toast('Вкажи кількість літрів', true); return false; }
+      state.fuels.push({ id: uid(), carId: cid(), date: $('fDate').value || today(), km: num($('fKm').value), liters: l, sum: num($('fSum').value), full: $('fFull').value !== '0', fuelType: $('fType').value, station: $('fStation').value.trim(), pay: $('fPay').value }); persist(); return true; } },
+  svc: { icon:'wrench', c:'--c-svc',
+    html: () => ({ title:'Новий сервіс', after: () => renderChecks(),
+      body: `<section class="card2"><h4>Що зроблено</h4>
+        ${F('svcType','Тип','<select id="svcType" onchange="renderChecks()"><option value="to">ТО</option><option value="remont">Ремонт</option><option value="zamina">Заміна</option><option value="tuning">Тюнінг</option><option value="zapch">Запчастина</option><option value="diag">Діагностика</option><option value="shyna">Шиномонтаж</option><option value="hodova">Ремонт ходової</option><option value="galma">Гальма</option><option value="ridyny">Рідини і ремені</option><option value="inshi">Інше</option></select>', true)}
+        <div class="checks" id="svcChecks"></div><div id="pickedBox" class="m"></div>
+        <div class="btns"><button class="sm" onclick="viewPicked()">${ico('eye')}Переглянути вибір</button></div></section>
+        <section class="card2"><h4>Основні дані</h4><div class="grid">
+        ${F('svcDate','Дата','<input id="svcDate" type="date" value="' + today() + '">')}
+        ${F('svcKm','Пробіг, км','<input id="svcKm" inputmode="numeric" value="' + (odoNow(curCar()) || '') + '">')}
+        ${F('svcCost','Сума, грн','<input id="svcCost" inputmode="decimal" placeholder="0">')}
+        ${F('svcPhoto','Фото чеку','<input id="svcPhoto" type="file" accept="image/*">')}
+        ${F('svcNote','Примітка (необовʼязково)','<input id="svcNote" placeholder="Що ще зроблено">', true)}
+        ${F('svcNextKm','Нагадати через, км','<input id="svcNextKm" inputmode="numeric" placeholder="напр. 10000">')}${F('svcNextD','Нагадати через, днів','<input id="svcNextD" inputmode="numeric" placeholder="напр. 365">')}</div></section>` }),
+    submit: async () => {
+      const note = $('svcNote').value.trim();
+      if (!pickedItems.length && !note) { toast('Оберіть хоча б одну позицію або напишіть примітку', true); return false; }
+      const file = $('svcPhoto').files[0], photo = file ? await new Promise(r => compressImage(file, r)) : '';
+      const item = { id: uid() + '-' + state.services.length, carId: cid(), date: $('svcDate').value || today(), km: num($('svcKm').value), items: [...pickedItems], what: [...pickedItems, note].filter(Boolean).join(' · '), cost: num($('svcCost').value), photo };
+      state.services.push(item);
+      { const nk = num($('svcNextKm').value), nd = num($('svcNextD').value); if (nk || nd) { const d = new Date(item.date + 'T00:00:00'); if (nd) d.setDate(d.getDate() + nd);
+        state.rems.push({ id: uid(), carId: cid(), title: 'Наступний сервіс: ' + (item.what || 'сервіс').slice(0, 60), date: nd ? ymd(d) : '', km: nk ? (item.km || odoNow(curCar())) + nk : 0, everyD: 0, everyKm: 0 }); } }
+      if (!save()) { state.services.pop(); toast('Не вистачає місця. Спробуй без великого фото.', true); return false; }
+      return true; } },
+  km: { icon:'gauge', c:'--c-km',
+    html: (id) => { const k = id ? state.kms.find(x => x.id === id) : null; const route = k ? (ROUTES.filter(r => (k.note || '').startsWith(r)).sort((x, y) => y.length - x.length)[0] || '') : ''; const custom = k ? (k.note || '').slice(route.length).replace(/^ · /, '') : '';
+      return { title: k ? 'Змінити день' : 'Новий день',
+      body: `<section class="card2"><div class="grid">
+        ${F('kmDate','Дата','<input id="kmDate" type="date" value="' + (k ? esc(k.date) : today()) + '">')}
+        ${F('kmValue','Пробіг за день, км','<input id="kmValue" inputmode="decimal" placeholder="0" value="' + (k ? k.km : '') + '">')}
+        ${F('kmFuel','Заправлено, л','<input id="kmFuel" inputmode="decimal" placeholder="0" value="' + (k && k.fuel ? k.fuel : '') + '">')}
+        ${F('kmPhoto','Фото','<input id="kmPhoto" type="file" accept="image/*">')}
+        ${F('kmNote','Маршрут зі списку','<select id="kmNote">' + optList(ROUTES, route, 'Маршрут зі списку') + '</select>', true)}
+        ${F('kmNoteCustom','Свій коментар','<textarea id="kmNoteCustom" rows="2" placeholder="Необовʼязково">' + esc(custom) + '</textarea>', true)}</div></section>` }; },
+    submit: async (id) => {
+      const note = [$('kmNote').value, $('kmNoteCustom').value.trim()].filter(Boolean).join(' · ');
+      const file = $('kmPhoto').files[0], photo = file ? await new Promise(r => compressImage(file, r)) : null;
+      if (id) { const k = state.kms.find(x => x.id === id); if (!k) return false;
+        k.date = $('kmDate').value || k.date; k.km = num($('kmValue').value); k.fuel = num($('kmFuel').value); k.note = note; if (photo) k.photo = photo; persist(); return true; }
+      const item = { id: uid() + '-' + state.kms.length, carId: cid(), date: $('kmDate').value || today(), km: num($('kmValue').value), fuel: num($('kmFuel').value), note, photo: photo || '' };
+      state.kms.push(item);
+      if (!save() && photo) { item.photo = ''; if (!save()) { state.kms.pop(); toast('Не вистачає місця. Видали старі записи з великими фото.', true); return false; } toast('Не вистачило місця для фото, день збережено без нього', true); }
+      else if (!save()) { state.kms.pop(); toast('Не вистачає місця в памʼяті браузера.', true); return false; }
+      return true; } },
+  rem: { icon:'bell', c:'--c-rem',
+    html: () => ({ title:'Нове нагадування', body: `<section class="card2"><div class="grid">${F('remTitle','Що нагадати','<input id="remTitle" placeholder="Страховка, техогляд, права...">', true)}${F('remDate','Дата','<input id="remDate" type="date">')}${F('remKm','За пробігом, км','<input id="remKm" inputmode="numeric" placeholder="напр. 150000">')}${F('remEvD','Повторювати кожні, днів','<input id="remEvD" inputmode="numeric" placeholder="необовʼязково">')}${F('remEvK','Повторювати кожні, км','<input id="remEvK" inputmode="numeric" placeholder="необовʼязково">')}</div></section>` }),
+    submit: () => { if (!$('remTitle').value.trim()) { toast('Напиши, що нагадати', true); return false; } if (!$('remDate').value && !num($('remKm').value)) { toast('Вкажи дату або пробіг', true); return false; }
+      state.rems.push({ id: uid(), carId: cid(), title: $('remTitle').value.trim(), date: $('remDate').value, km: num($('remKm').value) || 0, everyD: num($('remEvD').value) || 0, everyKm: num($('remEvK').value) || 0 }); persist(); return true; } },
+  exp: { icon:'wallet', c:'--c-exp',
+    html: () => ({ title:'Витрати/Доходи', body: `<section class="card2"><div class="grid">
+      ${F('exKind','Тип','<select id="exKind"><option value="exp">Витрата</option><option value="inc">Дохід</option></select>', true)}
+      ${F('exTitle','Назва','<input id="exTitle" placeholder="Мийка, штраф, парковка...">', true)}
+      ${F('exCat','Категорія','<select id="exCat">' + optList(EXCATS, '', 'Оберіть') + '</select>', true)}
+      ${F('exSum','Сума, грн','<input id="exSum" inputmode="decimal" placeholder="0">')}
+      ${F('exDate','Дата','<input id="exDate" type="date" value="' + today() + '">')}</div></section>` }),
+    submit: () => { if (!$('exTitle').value.trim()) { toast('Вкажи назву', true); return false; } if (!num($('exSum').value)) { toast('Вкажи суму', true); return false; }
+      state.exps.push({ id: uid(), carId: cid(), kind: $('exKind').value, cat: $('exCat').value, title: $('exTitle').value.trim(), sum: num($('exSum').value), date: $('exDate').value || today() }); persist(); return true; } },
+  car: { icon:'car', c:'--c-car',
+    html: (id, pre) => { const c = id ? state.cars.find(x => x.id === id) : null; const v = Object.assign({ vtype:'car' }, c || {}, c ? {} : pre); const t = VT.find(x => x[0] === v.vtype) || VT[0];
+      return { title: c ? 'Змінити авто' : 'Нове авто', after: () => { updModels(); $('cfMake').oninput = updModels; },
+      body: `<datalist id="dlMake">${brands().map(b => `<option value="${esc(b)}">`).join('')}</datalist><datalist id="dlModel"></datalist>
+      <section class="card2"><h4>Основні дані</h4><div class="grid">
+        <div class="field full"><label>Тип</label><input id="cfType" type="hidden" value="${esc(v.vtype)}"><button type="button" class="sel" id="cfTypeLb" onclick="pickVType()"><span style="display:flex;gap:10px;align-items:center">${ico(t[2])}<span>${t[1]}</span></span>${ico('chev')}</button></div>
+        ${F('cfBody','Тип кузова','<select id="cfBody">' + optList(BODIES, v.body, 'Оберіть тип кузова') + '</select>', true)}
+        ${F('cfMake','Марка','<input id="cfMake" class="pk" readonly placeholder="Оберіть марку" onclick="pickMake()" value="' + esc(v.make || '') + '">', true)}
+        ${F('cfModel','Модель','<input id="cfModel" class="pk" readonly placeholder="Оберіть модель" onclick="pickModel()" value="' + esc(v.model || '') + '">', true)}
+        ${F('cfName','Назва','<input id="cfName" placeholder="Підставиться з марки і моделі" value="' + esc(c ? c.name : '') + '">', true)}
+        ${F('cfYear','Рік','<input id="cfYear" inputmode="numeric" placeholder="2015" value="' + esc(v.year || '') + '">')}
+        ${F('cfGen','Покоління','<input id="cfGen" placeholder="Наприклад: Mk7" value="' + esc(v.gen || '') + '">')}
+        ${F('cfOdo','Пробіг, км','<input id="cfOdo" inputmode="numeric" placeholder="0" value="' + (v.odo || '') + '">', true)}
+        ${F('cfPhoto','Фото','<input id="cfPhoto" type="file" accept="image/*">', true)}</div></section>
+      <section class="card2"><h4>Документи</h4><div class="grid">
+        ${F('cfPlate','Держ. номер','<input id="cfPlate" placeholder="Наприклад: AA0000AA" value="' + esc(v.plate || '') + '">', true)}
+        ${F('cfVin','VIN','<input id="cfVin" placeholder="Наприклад: WVWZZZ..." value="' + esc(v.vin || '') + '">', true)}
+        ${F('cfOsago','Термін ОСЦПВ','<input id="cfOsago" type="date" value="' + esc(v.osago || '') + '">')}
+        ${F('cfKasko','Термін КАСКО','<input id="cfKasko" type="date" value="' + esc(v.kasko || '') + '">')}</div></section>
+      <section class="card2"><h4>Технічні дані</h4><div class="grid">
+        ${F('cfFuel','Тип пального','<select id="cfFuel">' + optList(FUELS, v.fuelType, 'Оберіть') + '</select>', true)}
+        ${F('cfTank','Обʼєм бака, л','<input id="cfTank" inputmode="decimal" value="' + esc(v.tank || '') + '">')}
+        ${F('cfEng','Тип двигуна','<select id="cfEng">' + optList(ENGS, v.engType, 'Оберіть') + '</select>')}
+        ${F('cfVol','Обʼєм двигуна, л','<input id="cfVol" inputmode="decimal" value="' + esc(v.engVol || '') + '">')}
+        ${F('cfPow','Потужність, к.с.','<input id="cfPow" inputmode="numeric" value="' + esc(v.power || '') + '">')}
+        ${F('cfTrans','Трансмісія','<select id="cfTrans">' + optList(TRANS, v.trans, 'Оберіть') + '</select>')}
+        ${F('cfDrive','Привід','<select id="cfDrive">' + optList(DRIVES, v.drive, 'Оберіть тип приводу') + '</select>')}
+        ${F('cfColor','Колір','<select id="cfColor">' + optList(COLORS, v.color, 'Оберіть') + '</select>', true)}</div></section>
+      <section class="card2"><h4>Технічний огляд та сервіс</h4><div class="grid">
+        ${F('cfTech','Наступний техогляд','<input id="cfTech" type="date" value="' + esc(v.tech || '') + '">')}
+        ${F('cfNext','Наступне ТО на, км','<input id="cfNext" inputmode="numeric" value="' + esc(v.nextTo || '') + '">')}</div></section>` }; },
+    submit: async (id) => {
+      const make = $('cfMake').value.trim(), model = $('cfModel').value.trim();
+      const name = $('cfName').value.trim() || [make, model].filter(Boolean).join(' ');
+      if (!name) { toast('Вкажи марку і модель або назву', true); return false; }
+      const file = $('cfPhoto').files[0], photo = file ? await new Promise(r => compressImage(file, r)) : null;
+      const data = { name, vtype: $('cfType').value || 'car', body: $('cfBody').value, make, model, gen: $('cfGen').value.trim(), year: $('cfYear').value.trim(), odo: num($('cfOdo').value) || '', plate: $('cfPlate').value.trim(), vin: $('cfVin').value.trim(), osago: $('cfOsago').value, kasko: $('cfKasko').value, fuelType: $('cfFuel').value, tank: num($('cfTank').value) || '', engType: $('cfEng').value, engVol: num($('cfVol').value) || '', power: num($('cfPow').value) || '', trans: $('cfTrans').value, drive: $('cfDrive').value, color: $('cfColor').value, tech: $('cfTech').value, nextTo: num($('cfNext').value) || '' };
+      if (photo) data.photo = photo;
+      if (id) { const c = state.cars.find(x => x.id === id); if (!c) return false; Object.assign(c, data); }
+      else { const n = Object.assign({ id: uid(), archived: false }, data); state.cars.push(n); state.curCar = n.id; }
+      persist(); return true; } }
+};
+function updModels() {
+  const mk = ($('cfMake').value || '').trim().toLowerCase();
+  $('dlModel').innerHTML = CARS.filter(c => c[0].toLowerCase() === mk).map(c => `<option value="${esc(c[1])}">`).join('');
+}
+
+/* ---------- catalog (service) ---------- */
+function renderChecks() {
+  if (!$('svcChecks')) return;
+  const type = $('svcType').value || 'to';
+  $('svcChecks').innerHTML = (CATALOG[type] || []).map(name => `<label><input type="checkbox" value="${esc(name)}" ${pickedItems.includes(name) ? 'checked' : ''} onchange="toggleItem(this)"> ${esc(name)}</label>`).join('');
+  showPicked();
+}
+function toggleItem(el) {
+  if (el.checked) { if (!pickedItems.includes(el.value)) pickedItems.push(el.value); } else pickedItems = pickedItems.filter(x => x !== el.value);
+  showPicked();
+}
+function viewPicked() {
+  const box = $('pickedBox');
+  box.innerHTML = pickedItems.length ? '<b>Обрано:</b><br>' + pickedItems.map((x, i) => (i + 1) + '. ' + esc(x)).join('<br>') : 'Поки нічого не обрано';
+}
+function showPicked() { $('pickedBox').textContent = pickedItems.length ? 'Обрано: ' + pickedItems.join(', ') : ''; }
+
+/* ---------- misc actions ---------- */
+function compressImage(file, done) {
+  const r = new FileReader();
+  r.onload = () => {
+    const img = new Image();
+    img.onload = () => {
+      const max = 900; let w = img.width, h = img.height;
+      if (w > max || h > max) { if (w > h) { h = Math.round(h * max / w); w = max; } else { w = Math.round(w * max / h); h = max; } }
+      const cv = document.createElement('canvas'); cv.width = w; cv.height = h;
+      cv.getContext('2d').drawImage(img, 0, 0, w, h);
+      done(cv.toDataURL('image/jpeg', 0.6));
+    };
+    img.onerror = () => done('');
+    img.src = r.result;
+  };
+  r.onerror = () => done('');
+  r.readAsDataURL(file);
+}
+function calcFuel() {
+  const dist = num($('calcDist').value), avg = num($('calcAvg').value), l = num($('calcLiters').value), out = $('calcResult');
+  let t;
+  if (avg <= 0) t = 'Вкажи середню витрату';
+  else if (dist > 0) t = `На ${dist} км потрібно приблизно ${(dist * avg / 100).toFixed(1)} л`;
+  else if (l > 0) t = `На ${l} л можна проїхати приблизно ${(l / avg * 100).toFixed(0)} км`;
+  else t = 'Вкажи відстань або літри';
+  out.textContent = t; out.hidden = false;
+}
+function ask(btn, list, id) {
+  if (btn.dataset.arm !== '1') {
+    const orig = btn.innerHTML; btn.dataset.arm = '1'; btn.textContent = 'Точно?';
+    setTimeout(() => { if (btn.isConnected) { btn.dataset.arm = ''; btn.innerHTML = orig; } }, 3000);
+    return;
+  }
+  state[list] = (state[list] || []).filter(x => x.id !== id);
+  persist(); render();
+}
+
+/* ---------- files ---------- */
+let dlCap;
+async function getDl() {
+  if (dlCap !== undefined) return dlCap;
+  try { dlCap = (window.claude && await window.claude.use('downloads')) || null; } catch (e) { dlCap = null; }
+  return dlCap;
+}
+async function saveFile(name, data) {
+  const d = await getDl();
+  if (!d) {
+    try {
+      const mime = /\.json$/.test(name) ? 'application/json' : /\.csv$/.test(name) ? 'text/csv;charset=utf-8' : 'text/html;charset=utf-8';
+      const blob = new Blob([data], { type: mime }), url = URL.createObjectURL(blob), a = document.createElement('a');
+      a.href = url; a.download = name; document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 4000); toast('Файл завантажено');
+    } catch (e) {
+      try { await navigator.clipboard.writeText(typeof data === 'string' ? data : ''); toast('Не вдалося завантажити. Вміст скопійовано.', true); }
+      catch (e2) { toast('Не вдалося завантажити файл.', true); }
+    }
+    return;
+  }
+  try { await d.save({ filename: name, data }); toast('Файл збережено'); }
+  catch (e) { if (e && e.code === 'declined') return; toast('Не вдалося зберегти файл', true); }
+}
+function backup() { saveFile('auto-backup.json', JSON.stringify(state, null, 2)); }
+function restore(input) {
+  const file = input.files && input.files[0];
+  if (!file) return;
+  const r = new FileReader();
+  r.onload = () => {
+    try {
+      const data = JSON.parse(r.result);
+      if (!data || !Array.isArray(data.cars)) throw new Error('bad');
+      state = Object.assign({}, data); normalize(); curCar(); persist(); render();
+      toast('Бекап відновлено');
+    } catch (e) { toast('Не вдалося прочитати файл', true); }
+    input.value = '';
+  };
+  r.readAsText(file);
+}
+const DOC_CSS = 'body{font-family:sans-serif;margin:20px;color:#1c1917}table{border-collapse:collapse}th,td{border:1px solid #999;padding:6px;text-align:left;vertical-align:top}img{display:block}';
+const wrapDoc = (title, body) => '<!DOCTYPE html><html lang="uk"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>' + esc(title) + '</title><style>' + DOC_CSS + '</style></head><body>' + body + '</body></html>';
+function openView(title, body) { $('viewTitle').textContent = title; $('viewBody').innerHTML = body; $('view').hidden = false; $('view').scrollTop = 0; }
+const carLabel = () => { const c = curCar(); return c ? c.name : 'авто'; };
+const csvCell = (v) => { v = String(v == null ? '' : v); return /[;"\n]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v; };
+function serviceReport(photoW) {
+  const list = mine(state.services).sort((a,b) => String(a.date).localeCompare(String(b.date)));
+  const total = list.reduce((s,x) => s + (+x.cost||0), 0);
+  const rows = list.map(s => `<tr><td>${esc(s.date)}</td><td>${s.km||0}</td><td>${esc(s.what||'')}</td><td>${s.cost||0}</td><td>${s.photo ? `<img src="${s.photo}" style="max-width:${photoW}px">` : ''}</td></tr>`).join('');
+  return { list, total, body: `<h1>Звіт послуг · ${esc(carLabel())}</h1><table><tr><th>Дата</th><th>Км</th><th>Послуга</th><th>Сума</th><th>Чек</th></tr>${rows}<tr><td colspan="3"><b>Разом</b></td><td><b>${total} грн</b></td><td></td></tr></table>` };
+}
+function saveServiceReport(fmt) {
+  if (!curCar()) return toast('Спочатку додай авто', true);
+  const r = serviceReport(160);
+  if (!r.list.length) return toast('Записів ще немає', true);
+  if (fmt === 'view') return openView('Звіт послуг', r.body);
+  if (fmt === 'excel') {
+    const lines = [['Дата','Км','Послуга','Сума']].concat(r.list.map(s => [s.date, s.km||0, s.what||'', s.cost||0]), [['','','Разом', r.total]]);
+    return saveFile('zvit-poslugy.csv', '﻿' + lines.map(l => l.map(csvCell).join(';')).join('\r\n'));
+  }
+  saveFile('zvit-poslugy.html', wrapDoc('Звіт послуг', r.body));
+}
+function monthReport(month, photoW) {
+  const days = mine(state.kms).filter(k => String(k.date||'').startsWith(month)).sort((a,b) => String(a.date).localeCompare(String(b.date)));
+  const sk = days.reduce((s,k) => s + (+k.km||0), 0), sf = days.reduce((s,k) => s + (+k.fuel||0), 0);
+  const rows = days.map(k => `<tr><td>${esc(k.date)}</td><td>${k.km||0}</td><td>${k.fuel||0}</td><td>${esc(k.note||'')}</td><td>${k.photo ? `<img src="${k.photo}" style="max-width:${photoW}px">` : ''}</td></tr>`).join('');
+  return { days, body: `<h1>Звіт · ${esc(month)}</h1><p>${esc(carLabel())} · ${sk} км · ${sf.toFixed(1)} л</p><table><tr><th>Дата</th><th>Км</th><th>Літри</th><th>Примітка</th><th>Фото</th></tr>${rows}</table>` };
+}
+function saveMonthReport(fmt) {
+  if (!curCar()) return toast('Спочатку додай авто', true);
+  const month = $('monthPick').value || today().slice(0,7);
+  const r = monthReport(month, fmt === 'excel' ? 180 : 140);
+  if (!r.days.length) return toast('За цей місяць записів немає', true);
+  if (fmt === 'view') return openView('Звіт ' + month, r.body);
+  saveFile('zvit-' + month + '.html', wrapDoc('Звіт ' + month, r.body));
+}
+
+
+/* ---------- extras: settings, brands, day form, lightbox ---------- */
+function ensureSet() { const d = {name:'',theme:'auto',accent:'#1f6feb',cur:'грн',dfmt:'DD.MM.YYYY',nfmt:'uk',year:true,warnDays:30,warnKm:1000,hfc:true,hev:true,hpr:true,routes:['Ірпінь - Макарів','БЦ','БЦ - Фастів','БЦ - Сквира','Фастів','Фастів - Гребінки','Ірпінь - Буча - Гостомель','Ірпінь','Офіс Жуляни','Офіс Вишневе','Іванків','Іванків - Вишгород']};
+  if (!Array.isArray(state.lists)) state.lists = []; if (!state.set || typeof state.set !== 'object') state.set = {}; Object.keys(d).forEach(k => { if (state.set[k] === undefined) state.set[k] = d[k]; }); }
+ensureSet();
+const S = () => state.set;
+Object.assign(CATALOG, {
+  remont: ['Двигун','Коробка передач','Зчеплення','Електрика','Кузовний ремонт','Вихлопна система','Кондиціонер','Опалення','Паливна система','Стартер / генератор'],
+  zamina: ['Акумулятор','Лампи','Щітки склоочисника','Ремінь','Фільтр','Технічна рідина','Колодки','Шини / диски','Датчик','Прокладка'],
+  tuning: ['Чіп-тюнінг','Спортивний вихлоп','Спортивна підвіска','Диски / шини','Обвіс','Тонування','Салон / оббивка','Світло / оптика','Аудіосистема','Плівка / вінілі'],
+  zapch: ['Оригінальна запчастина','Аналог','Б/в запчастина','Комплект','Витратні матеріали'],
+  diag: ["Комп'ютерна діагностика",'Діагностика ходової','Діагностика гальм','Діагностика двигуна','Діагностика кондиціонера','Розвал-сходження','Діагностика АКПП'],
+  shyna: ['Сезонна заміна шин','Балансування','Ремонт проколу','Заміна дисків','Зберігання шин','Розвал-сходження','Перевірка тиску / TPMS']
+});
+/* brands + models (brand list from cardrive.com.ua/catalog; models partial) */
+const EXTRA = "Chery:Tiggo 4,Tiggo 7 Pro,Tiggo 8,Arrizo 6,Amulet,QQ;Geely:Coolray,Atlas,Emgrand,Monjaro,Tugella,MK;Haval:Jolion,H6,H9,F7,Dargo;Lexus:RX,NX,ES,IS,GX,LX,UX;Land Rover:Range Rover,Range Rover Sport,Discovery,Defender,Freelander,Evoque;Porsche:Cayenne,Macan,Panamera,911,Taycan;Lada (ВАЗ):Granta,Vesta,Niva,Largus,2107,2110,2114;ГАЗ:Газель,Соболь,Волга,Валдай;ЗАЗ:Таврія,Славута,Forza,Vida,968;УАЗ:Patriot,Hunter,Буханка;Москвич:2141,412;Fiat:Doblo,Panda,500,Tipo,Ducato,Punto,Scudo;Jeep:Wrangler,Grand Cherokee,Cherokee,Compass,Renegade;Infiniti:Q50,QX50,QX60,FX35;Mini:Cooper,Countryman,Clubman;Jaguar:XF,XE,F-Pace,XJ;Alfa Romeo:Giulia,Stelvio,159,147;SsangYong:Korando,Rexton,Actyon,Tivoli,Kyron;MG:ZS,5,HS,4;BYD:Han,Tang,Song Plus,Dolphin,Atto 3,Seal;Great Wall:Hover H3,Hover H5,Wingle;Lifan:X60,Solano,Breez;Chrysler:300C,Voyager,Pacifica;Dodge:Charger,Challenger,Durango,Caravan;Cadillac:Escalade,CTS,SRX;Genesis:G70,G80,GV70,GV80;Cupra:Formentor,Born,Leon;Smart:Fortwo,Forfour;Saab:9-3,9-5;Lancia:Ypsilon,Delta;Isuzu:D-Max,Trooper;Iveco:Daily;JAC:S3,JS4,T6;Changan:CS35,CS55,UNI-T;Zeekr:001,X,7X;Xpeng:G6,G9,P7;Acura:MDX,RDX,TLX;Buick:Encore,Envision;Lincoln:Navigator,MKZ;Hummer:H2,H3;Rover:75,45;Daihatsu:Terios,Sirion;Maserati:Ghibli,Levante;Bentley:Continental GT;Ferrari:488;Lamborghini:Urus;Jetour:X70,Dashing;Omoda:C5;Exeed:TXL,VX;Jaecoo:J7;Tank:300;Polestar:2;VinFast:VF8;Ram:1500;GMC:Sierra;Datsun:on-DO;Opel:Combo";
+EXTRA.split(';').forEach(p => { const [b, ms] = p.split(':'); ms.split(',').forEach(m => { if (!CARS.some(c => c[0] === b && c[1] === m)) CARS.push([b, m, '']); }); });
+"Abarth,AC,Aion,Alpina,Alpine,Aston Martin,Austin,Avatr,BAIC,Baojun,BAW,Belgee,Brabus,Brilliance,Bugatti,Chana,Changfeng,Dacia,Dadi,Daimler,Denza,DFSK,DS,Dongfeng,FAW,Fisker,Forthing,Foton,GAC,Gonow,Hafei,Haima,Hanteng,Hawtai,Holden,Hongqi,Hozon,Hyperion,Ineos,Iran Khodro,JMC,Karma,KGM,Landwind,Leapmotor,Li Auto (Lixiang),Livan,Lotus,Lucid,Lynk & Co,Mahindra,Maruti,Matra,Maxus,Maybach,McLaren,Mercury,Mitsuoka,Morgan,Nio,Ora,Pagani,Perodua,Piaggio,Plymouth,Pontiac,Proton,Qoros,Rivian,Roewe,Rolls-Royce,Saipa,SAIC,Scion,Seres,Soueast,Tata,Tatra,Wey,Voyah,Wuling,Xiaomi,Zotye,ЗІЛ,Іж,ЛуАЗ,Руссо-Балт,СМЗ,ТагАЗ".split(',').forEach(b => { if (!CARS.some(c => c[0] === b)) CARS.push([b, '', '']); });
+const brandHue = (b) => { let h = 0; for (const ch of b) h = (h * 31 + ch.charCodeAt(0)) % 360; return h; };
+const LOGO = {'Audi':'audi','BMW':'bmw','Chery':'chery','Chevrolet':'chevrolet','Citroen':'citroen','Daewoo':'daewoo','Ford':'ford','Geely':'geely','Haval':'haval','Honda':'honda','Hyundai':'hyundai','Kia':'kia','Lada (ВАЗ)':'vaz','Land Rover':'land-rover','Lexus':'lexus','Mazda':'mazda','Mercedes-Benz':'mercedes','Mitsubishi':'mitsubishi','Nissan':'nissan','Opel':'opel','Peugeot':'peugeot','Porsche':'porsche','Renault':'renault','Skoda':'skoda','Subaru':'subaru','Suzuki':'suzuki','Toyota':'toyota','Volkswagen':'volkswagen','Volvo':'volvo','ГАЗ':'gaz'};
+const bIcon = (b) => { const w = b.replace(/[()&]/g, '').split(/[\s-]+/).filter(Boolean), t = w.length > 1 ? w[0][0] + w[1][0] : b.slice(0, 2), lg = LOGO[b];
+  return `<span class="bi" style="position:relative;overflow:hidden;background:hsl(${brandHue(b)} 52% 40%)">${esc(t.charAt(0).toUpperCase() + t.slice(1).toLowerCase())}${lg ? `<img class="nolb" alt="" loading="lazy" src="https://cardrive.com.ua/storage/v1/object/public/catalog/marks/${lg}.webp" onerror="this.remove()" style="position:absolute;inset:0;width:100%;height:100%;object-fit:contain;background:#fff;padding:5px;cursor:inherit">` : ''}</span>`; };
+let bl = { b: null };
+function openBrandList_old(b) {
+  closeOverlays(); bl.b = b || null;
+  openSheet(1, { title: bl.b || 'Оберіть марку', icon: 'car', c: '--c-car',
+    body: '<div class="field"><input id="blq" placeholder="Пошук марки або моделі" oninput="drawBL()" autocomplete="off"></div><div id="blBox" class="card2" style="padding:0;overflow:hidden;gap:0"></div>',
+    footer: '<button onclick="closeSheet(1)">Скасувати</button><button class="p" onclick="openForm(\'car\',null,{make:bl.b||\'\'})">Ввести вручну</button>', after: drawBL });
+}
+function drawBL() {
+  const q = (($('blq') || {}).value || '').toLowerCase().trim(), box = $('blBox'); if (!box) return;
+  const row = (b, m, y, sub) => `<button class="brow2" data-b="${esc(b)}" data-m="${esc(m)}" data-y="${esc(y)}" onclick="blPick(this.dataset.b,this.dataset.m,this.dataset.y)">${bIcon(b)}<span>${esc(m ? b + ' ' + m : b)}</span><span class="m">${esc(sub || '')}</span></button>`;
+  let h = '';
+  if (bl.b) { h = `<button class="brow2" onclick="openBrandList()">‹ Усі марки</button>` + CARS.filter(c => c[0] === bl.b && c[1] && (!q || c[1].toLowerCase().includes(q))).map(c => row(c[0], c[1], c[2], c[2])).join('') + row(bl.b, '', '', 'Інша модель'); }
+  else if (q) { h = CARS.filter(c => (c[0] + ' ' + c[1]).toLowerCase().includes(q)).slice(0, 60).map(c => c[1] ? row(c[0], c[1], c[2], c[2]) : `<button class="brow2" onclick="openBrandList(this.dataset.b)" data-b="${esc(c[0])}">${bIcon(c[0])}<span>${esc(c[0])}</span></button>`).join(''); }
+  else { const bs = [...new Set(CARS.map(c => c[0]))].sort((a, b) => a.localeCompare(b)); h = bs.map(b => { const n = CARS.filter(c => c[0] === b && c[1]).length; return `<button class="brow2" data-b="${esc(b)}" onclick="openBrandList(this.dataset.b)">${bIcon(b)}<span>${esc(b)}</span><span class="m">${n ? n + ' моделей' : ''}</span></button>`; }).join(''); }
+  box.innerHTML = h || '<div class="empty" style="padding:16px">Нічого не знайдено</div>';
+}
+function blPick(b, m, y) { openForm('car', null, { make: b, model: m, year: (String(y).match(/\d{4}/) || [''])[0] }); }
+/* inline day form */
+function fillDk() { const sel = $('dkCar'); if (!sel) return; const keep = sel.value, cs = state.cars.filter(c => !c.archived);
+  sel.innerHTML = cs.map(c => `<option value="${esc(c.id)}">${esc(c.name)}</option>`).join('');
+  if (cs.some(c => String(c.id) === keep)) sel.value = keep; else if (curCar()) sel.value = curCar().id;
+  { const kv = $('dkNote').value; $('dkNote').innerHTML = optList(ROUTES, ROUTES.includes(kv) ? kv : '', 'Маршрут зі списку'); } if (!$('dkDate').value) $('dkDate').value = today(); }
+async function addDayInline() {
+  if (!state.cars.length) { toast('Спочатку додай авто', true); openBrandList(); return; }
+  const km = num($('dkKm').value), fuel = num($('dkFuel').value);
+  if (!km && !fuel) { toast('Вкажи пробіг за день або літри', true); return; }
+  const file = $('dkPhoto').files[0], photo = file ? await new Promise(r => compressImage(file, r)) : '';
+  const it = { id: uid() + '-' + state.kms.length, carId: $('dkCar').value, date: $('dkDate').value || today(), km, fuel, note: [$('dkNote').value, $('dkCom').value.trim()].filter(Boolean).join(' · '), photo };
+  state.kms.push(it);
+  if (!save()) { if (photo) { it.photo = ''; if (!save()) { state.kms.pop(); toast('Не вистачає місця в памʼяті браузера', true); return; } toast('Фото не вмістилось, день збережено без нього', true); } else { state.kms.pop(); toast('Не вистачає місця в памʼяті браузера', true); return; } }
+  ['dkKm', 'dkFuel', 'dkCom'].forEach(i => $(i).value = ''); $('dkPhoto').value = ''; document.querySelectorAll('#dkPanel .pv').forEach(x => x.remove());
+  render(); toast('День додано'); grant('km');
+}
+/* settings */
+let setSub = null;
+function setSet(k, v) { S()[k] = v; persist(); applyLook(); render(); }
+function applyLook() { const r = document.documentElement, t = S().theme; if (t === 'auto') r.removeAttribute('data-theme'); else r.setAttribute('data-theme', t);
+  r.style.setProperty('--accent', S().accent); r.style.setProperty('--accent-soft', `color-mix(in srgb, ${S().accent} 16%, var(--surface))`); }
+const EXCATS = ['Страхування','Штрафи','Паркування','Мийка','Податки','Платні дороги','Аксесуари','Інше'];
+const ymd = (d) => d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+function doneRem(id) { const r = state.rems.find(x => x.id === id); if (!r) return; const car = state.cars.find(c => String(c.id) === String(r.carId)) || curCar();
+  if (r.date && r.everyD) { const d = new Date(r.date + 'T00:00:00'); d.setDate(d.getDate() + r.everyD); const t = new Date(); t.setHours(0, 0, 0, 0); while (d < t) d.setDate(d.getDate() + r.everyD); r.date = ymd(d); }
+  if (r.km && r.everyKm) r.km = Math.max(num(r.km), odoNow(car)) + r.everyKm;
+  persist(); render(); toast('Нагадування оновлено'); }
+const CHK_PRE = { 'Перед поїздкою': ['Рівень масла','Рівень антифризу','Тиск у шинах','Світло і поворотники','Рідина омивача','Документи','Паливо'], 'Зима': ['Зимова гума','Акумулятор','Антифриз до -30','Омивач зимовий','Щітки / склоочисники','Ліхтарик і буксирний трос'], 'Літо': ['Літня гума','Кондиціонер','Салонний фільтр','Охолодження двигуна'], 'Перед ТО': ['Записатися на сервіс','Список робіт','Запчастини','Документи на авто'], 'Далека дорога': ['Тиск у шинах + запаска','Аптечка','Вогнегасник','Знак аварійної зупинки','Зарядка / павербанк','Маршрут'] };
+function chFill() { const p = CHK_PRE[$('chPre').value]; if (!p) return; $('chTitle').value = $('chPre').value; $('chItems').value = p.join('\n'); }
+FORMS.chk = { icon:'check', c:'--c-km',
+  html: () => ({ title:'Новий чек-лист', body: `<section class="card2"><div class="grid">${F('chPre','Шаблон','<select id="chPre" onchange="chFill()">' + optList(Object.keys(CHK_PRE), '', 'Порожній') + '</select>', true)}${F('chTitle','Назва','<input id="chTitle" placeholder="Перед поїздкою">', true)}${F('chItems','Пункти (кожен з нового рядка)','<textarea id="chItems" rows="7"></textarea>', true)}</div></section>` }),
+  submit: () => { const t = $('chTitle').value.trim(), it = $('chItems').value.split('\n').map(x => x.trim()).filter(Boolean); if (!t || !it.length) { toast('Вкажи назву й хоча б один пункт', true); return false; }
+    state.lists.push({ id: uid(), carId: cid(), title: t, items: it.map(x => ({ t: x, d: false })) }); persist(); return true; } };
+function renderChk() { const el = $('chkList'); if (!el) return; const c = curCar(), ls = state.lists.filter(l => !l.carId || !c || String(l.carId) === String(c.id));
+  el.innerHTML = ls.map(l => { const dn = l.items.filter(i => i.d).length; return `<section class="panel"><div class="prow"><h2>${esc(l.title)}</h2><span class="m">${dn}/${l.items.length}</span></div><div class="gauge"><i style="width:${l.items.length ? dn / l.items.length * 100 : 0}%"></i></div><div class="checks">${l.items.map((i, k) => `<label><input type="checkbox" ${i.d ? 'checked' : ''} onchange="chkTog('${l.id}',${k})"> ${esc(i.t)}</label>`).join('')}</div><div class="btns"><button class="sm" onclick="chkReset('${l.id}')">Скинути</button><button class="sm danger" onclick="ask(this,'lists','${l.id}')">Видалити</button></div></section>`; }).join('') || '<section class="panel"><div class="empty">Чек-листів немає. Натисни «Чек-лист», щоб створити.</div></section>'; }
+function chkTog(id, k) { const l = state.lists.find(x => x.id === id); if (!l) return; l.items[k].d = !l.items[k].d; persist(); renderChk(); }
+function chkReset(id) { const l = state.lists.find(x => x.id === id); if (!l) return; l.items.forEach(i => i.d = false); persist(); renderChk(); }
+function exportCsv(kind) { const c = curCar(); if (!c) return toast('Спочатку додай авто', true); const L = mine(state[kind]).slice().sort((a, b) => String(a.date).localeCompare(String(b.date)));
+  if (!L.length) return toast('Записів немає', true);
+  const M = { fuels: [['Дата','Пробіг','Літри','Сума','Ціна за л','Повний бак','Пальне','АЗС','Оплата'], x => [x.date, x.km, x.liters, x.sum, x.liters ? (x.sum / x.liters).toFixed(2) : '', x.full === false ? 'ні' : 'так', x.fuelType || '', x.station || '', x.pay || '']],
+    exps: [['Дата','Тип','Категорія','Назва','Сума'], x => [x.date, x.kind === 'inc' ? 'Дохід' : 'Витрата', x.cat || '', x.title, x.sum]],
+    services: [['Дата','Км','Послуга','Сума'], x => [x.date, x.km || 0, x.what || '', x.cost || 0]],
+    kms: [['Дата','Км','Літри','Примітка'], x => [x.date, x.km || 0, x.fuel || 0, x.note || '']] }[kind];
+  saveFile(kind + '-' + today() + '.csv', '\ufeff' + [M[0]].concat(L.map(M[1])).map(r => r.map(csvCell).join(';')).join('\r\n')); }
+function extraStats() { const c = curCar(), el = $('statsBox'); if (!c || !el) return;
+  const f = mine(state.fuels), sv = mine(state.services), ex = mine(state.exps), eo = ex.filter(e => e.kind !== 'inc');
+  const sum = (a, g) => a.reduce((s, x) => s + (+g(x) || 0), 0), tot = (a, b) => sum(f.filter(x => String(x.date || '').startsWith(a)), x => x.sum) + sum(sv.filter(x => String(x.date || '').startsWith(a)), x => x.cost) + sum(eo.filter(x => String(x.date || '').startsWith(a)), x => x.sum);
+  const total = sum(f, x => x.sum) + sum(sv, x => x.cost) + sum(eo, x => x.sum);
+  const dates = [...f, ...sv, ...ex].map(x => x.date).filter(Boolean).sort(); let months = 1;
+  if (dates.length) { const a = new Date(dates[0]), b = new Date(); months = Math.max(1, (b.getFullYear() - a.getFullYear()) * 12 + b.getMonth() - a.getMonth() + 1); }
+  const ks = [...f.map(x => x.km), ...sv.map(x => x.km), num(c.odo)].filter(v => v > 0), span = ks.length ? odoNow(c) - Math.min(...ks) : 0;
+  const cat = {}; eo.forEach(e => { const k = e.cat || 'Без категорії'; cat[k] = (cat[k] || 0) + (+e.sum || 0); });
+  const ck = Object.keys(cat).sort((a, b) => cat[b] - cat[a]), cm = Math.max(...ck.map(k => cat[k]), 1);
+  const fs = f.filter(x => x.km > 0).sort((a, b) => a.km - b.km), fl = fs.filter(x => x.full !== false), pts = [];
+  for (let i = 1; i < fl.length; i++) { const km = fl[i].km - fl[i - 1].km, l = fs.filter(x => x.km > fl[i - 1].km && x.km <= fl[i].km).reduce((s, x) => s + x.liters, 0); if (km > 0 && l > 0) pts.push({ d: fl[i].date, v: l / km * 100 }); }
+  const pp = pts.slice(-8), pm = Math.max(...pp.map(p => p.v), 1);
+  const now = new Date(), cur = ymd(now).slice(0, 7), pv = new Date(now.getFullYear(), now.getMonth() - 1, 1), prev = ymd(pv).slice(0, 7), tc = tot(cur), tp = tot(prev);
+  const diff = tp > 0 ? Math.round((tc - tp) / tp * 100) : null;
+  el.insertAdjacentHTML('beforeend', `
+  <section class="tiles"><div class="tile"><div class="th">${ico('cal')}За місяць</div><div class="tv">${fmtN(total / months)}<u>грн</u></div></div><div class="tile"><div class="th">${ico('gauge')}За км</div><div class="tv">${span > 0 ? fmtN(total / span, 2) : '—'}<u>грн</u></div></div></section>
+  <section class="panel"><h2>${ico('trend')}Цей місяць і минулий</h2><div class="m">Цей: <b>${fmtN(tc)} грн</b> · Минулий: <b>${fmtN(tp)} грн</b>${diff == null ? '' : ' · ' + (diff > 0 ? '+' : '') + diff + '%'}</div></section>
+  <section class="panel"><h2>${ico('wallet')}Витрати за категоріями</h2>${ck.length ? `<div class="bars">${ck.map(k => `<div class="brow" style="--c:var(--c-exp)"><span>${esc(k)}</span><div class="tr"><i style="width:${(cat[k] / cm * 100).toFixed(0)}%"></i></div><span class="n">${fmtN(cat[k])} грн</span></div>`).join('')}</div>` : '<div class="empty">Додай витрати з категоріями</div>'}</section>
+  <section class="panel"><h2>${ico('fuel')}Витрата між заправками, л/100 км</h2>${pp.length ? `<div class="bar2">${pp.map(p => `<div style="width:44px;flex-basis:44px"><span>${p.v.toFixed(1)}</span><i style="height:${Math.max(4, Math.round(p.v / pm * 110))}px;width:26px"></i><span>${fdate(p.d).slice(0, 5)}</span></div>`).join('')}</div><div class="m">Рахується між заправками «повний бак».</div>` : '<div class="empty">Потрібні дві заправки з позначкою «повний бак»</div>'}</section>
+  <section class="panel"><h2>${ico('save')}Експорт CSV</h2><div class="btns"><button onclick="exportCsv('fuels')">Заправки</button><button onclick="exportCsv('exps')">Витрати</button><button onclick="exportCsv('services')">Сервіс</button><button onclick="exportCsv('kms')">Пробіг</button></div></section>`); }
+const _rs = renderStats; renderStats = function () { _rs(); extraStats(); };
+function renderSet() {
+  const el = $('setBox'); if (!el) return; const s = S(), subs = ['profile','look','lang','fmt','home','notif','data'];
+  const row = (k, i, t, sub) => `<button class="srow" onclick="setSub='${k}';renderSet();window.scrollTo(0,0)">${ico(i)}<span style="flex:1;min-width:0"><b>${t}</b><span class="m">${esc(sub)}</span></span>${ico('chev')}</button>`;
+  if (!setSub) { el.innerHTML = `<div class="sgroup">${row('profile','user','Профіль користувача', s.name || 'Вкажіть імʼя')}</div>
+    <div class="sgroup">${row('look','palette','Зовнішній вигляд','Тема, акцент')}${row('lang','globe','Мова','Українська')}${row('fmt','ruler','Формат та одиниці','Валюта, дати та числа')}</div>
+    <div class="sgroup">${row('routes','car','Маршрути','Список для розділу «Пробіг»')}${row('home','grid','Головний екран','Прогнози, події, графік')}${row('notif','bell','Сповіщення','Пороги нагадувань')}</div>
+    <div class="sgroup">${row('data','db','Дані','Резервна копія, відновлення')}</div>`; return; }
+  const LR = (i, t, c) => `<div class="lrow">${ico(i)}<span style="flex:1">${t}</span>${c}</div>`;
+  const sel = (k, o, v) => `<select class="pillsel" onchange="setSet('${k}',this.value)">${o.map(x => `<option value="${esc(x[0])}" ${x[0] === v ? 'selected' : ''}>${esc(x[1])}</option>`).join('')}</select>`;
+  const sw = (k, v) => `<button class="sw" role="switch" aria-checked="${!!v}" onclick="setSet('${k}',${!v})"></button>`;
+  const num2 = (k, v) => `<input class="pillsel" style="width:100px;text-align:right" inputmode="numeric" value="${v}" onchange="setSet('${k}',Math.max(1,num(this.value)))">`;
+  const T = { profile:'Профіль користувача', look:'Зовнішній вигляд', lang:'Мова', fmt:'Формат та одиниці', home:'Головний екран', notif:'Сповіщення', routes:'Маршрути', data:'Дані' }[setSub]; let b = '';
+  if (setSub === 'profile') b = LR('user','Імʼя',`<input class="pillsel" style="width:200px" value="${esc(s.name)}" placeholder="Ваше імʼя" onchange="setSet('name',this.value.trim())">`);
+  if (setSub === 'look') { const th = [['auto','Авто'],['light','Світла'],['dark','Темна']], ac = ['#1f6feb','#0ea5a4','#16a34a','#ef6c00','#e11d48','#7c3aed'];
+    b = `<div class="lrow" style="flex-direction:column;align-items:stretch"><span>Тема</span><div class="seg">${th.map(t => `<button aria-pressed="${s.theme === t[0]}" onclick="setSet('theme','${t[0]}')">${t[1]}</button>`).join('')}</div></div>
+      <div class="lrow" style="flex-direction:column;align-items:stretch"><span>Колір акценту</span><div class="btns">${ac.map(c => `<button class="swatch" style="background:${c}" aria-label="${c}" aria-pressed="${s.accent === c}" onclick="setSet('accent','${c}')"></button>`).join('')}<input type="color" value="${s.accent}" style="width:44px;height:44px;padding:2px;border-radius:50%" onchange="setSet('accent',this.value)"></div></div>`; }
+  if (setSub === 'lang') b = `<button class="srow" style="min-height:64px"><span style="flex:1;font-size:17px">Українська</span><span style="color:var(--accent)">${ico('check')}</span></button><div class="lrow m">Інші мови зʼявляться пізніше.</div>`;
+  if (setSub === 'fmt') b = LR('wallet','Валюта', sel('cur',[['грн','Гривня'],['$','Долар США'],['€','Євро'],['zł','Злотий']], s.cur)) + LR('cal','Формат дати', sel('dfmt',[['DD.MM.YYYY','DD.MM.YYYY'],['YYYY-MM-DD','YYYY-MM-DD'],['MM/DD/YYYY','MM/DD/YYYY']], s.dfmt))
+    + LR('list','Формат чисел', `<div class="seg" style="min-width:190px"><button aria-pressed="${s.nfmt !== 'en'}" onclick="setSet('nfmt','uk')">1 234,56</button><button aria-pressed="${s.nfmt === 'en'}" onclick="setSet('nfmt','en')">1,234.56</button></div>`) + LR('cal','Показувати рік у датах', sw('year', s.year));
+  if (setSub === 'home') b = LR('fuel','Прогноз заправки', sw('hfc', s.hfc)) + LR('list','Останні події', sw('hev', s.hev)) + LR('trend','Графік ціни пального', sw('hpr', s.hpr));
+  if (setSub === 'notif') b = LR('cal','Попереджати за, днів', num2('warnDays', s.warnDays)) + LR('gauge','Попереджати за, км до ТО', num2('warnKm', s.warnKm));
+  if (setSub === 'routes') b = (s.routes.map((r, i) => `<div class="lrow"><span style="flex:1">${esc(r)}</span><button class="sm danger" onclick="delRoute(${i})">✕</button></div>`).join('') || '<div class="lrow m">Список порожній</div>') + `<div class="lrow"><input id="rtNew" class="pillsel" style="flex:1;max-width:none" placeholder="Новий маршрут"><button class="p" onclick="addRoute()">Додати</button></div>`;
+  if (setSub === 'data') b = `<div class="lrow" style="flex-direction:column;align-items:stretch"><div class="m">Збережи дані файлом і відновиш їх пізніше. Підходить і бекап зі старої версії.</div><div class="btns"><button class="p" onclick="backup()">${ico('save')}Зберегти бекап</button><label class="fbtn">${ico('up')}Відновити<input id="restoreFile" type="file" accept="application/json,.json" style="display:none" onchange="restore(this)"></label></div></div><div class="lrow" style="flex-direction:column;align-items:stretch"><div class="m">Експорт поточного авто у CSV (відкривається в Excel)</div><div class="btns"><button onclick="exportCsv('fuels')">Заправки</button><button onclick="exportCsv('exps')">Витрати</button><button onclick="exportCsv('services')">Сервіс</button><button onclick="exportCsv('kms')">Пробіг</button></div></div>`;
+  el.innerHTML = `<div class="prow" style="justify-content:flex-start"><button onclick="setSub=null;renderSet()" aria-label="Назад" style="width:44px;padding:0;font-size:22px">‹</button><h2 style="font-size:22px">${T}</h2></div><div class="sgroup">${b}</div>`;
+}
+function applyHome() { const d = $('dash'); if (!d) return;
+  d.querySelectorAll('.sech').forEach(h => { const t = h.textContent, nx = h.nextElementSibling; const hide = (t.includes('Прогнози') && !S().hfc) || (t.includes('Останні події') && !S().hev); h.hidden = hide; if (nx) nx.hidden = (t.includes('Прогнози') || t.includes('Останні події')) ? hide : nx.hidden; });
+  d.querySelectorAll('.panel').forEach(p => { if (p.textContent.includes('Ціна пального')) p.hidden = !S().hpr; }); }
+function applyCur(root) { const c = S().cur; if (c === 'грн') return; const w = document.createTreeWalker(root || document.body, NodeFilter.SHOW_TEXT), a = []; let n;
+  while ((n = w.nextNode())) if (n.nodeValue.includes('грн') && !(n.parentElement && n.parentElement.closest('script,style,select'))) a.push(n); a.forEach(n => { n.nodeValue = n.nodeValue.replace(/грн/g, c); }); }
+function syncRoutes() { ROUTES.splice(0, ROUTES.length, ...(S().routes || [])); }
+function addRoute() { const v = ($('rtNew').value || '').trim(); if (!v) return; if (!S().routes.includes(v)) S().routes.push(v); persist(); render(); }
+function delRoute(i) { S().routes.splice(i, 1); persist(); render(); }
+const _rn = render; render = function () { syncRoutes(); _rn(); renderChk(); fillDk(); renderSet(); applyHome(); applyCur(); };
+const _sp = showPage; showPage = function (p) { if (p === 'set' && page !== 'set') setSub = null; _sp(p); renderSet(); };
+const _os = openSheet; openSheet = function (l, o) { _os(l, o); applyCur($(l === 2 ? 'sh2' : 'sh')); };
+/* photo viewer + previews */
+function openLB(src) { closeLB(); const d = document.createElement('div'); d.id = 'lb'; d.innerHTML = `<button aria-label="Закрити">${ico('x')}</button><img alt="">`; d.querySelector('img').src = src; d.onclick = closeLB; document.body.appendChild(d); }
+function closeLB() { const d = $('lb'); if (d) d.remove(); }
+document.addEventListener('click', (e) => { const im = e.target.closest && e.target.closest('img'); if (im && im.src && !im.closest('#lb') && !im.closest('button')) openLB(im.src); });
+document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeLB(); });
+document.addEventListener('change', (e) => { const t = e.target; if (!t.matches || !t.matches('input[type=file][accept^="image"]')) return;
+  const old = t.parentElement.querySelector('.pv'); if (old) old.remove(); const f = t.files && t.files[0]; if (!f) return;
+  const im = document.createElement('img'); im.className = 'pv'; im.alt = 'Попередній перегляд'; im.src = URL.createObjectURL(f); t.insertAdjacentElement('afterend', im); });
+applyLook();
+
+/* brand / model pickers inside the car form */
+function openBrandList() { openForm('car', null, {}); }
+let pk = { kind: '' };
+function pkOpen(kind) {
+  pk.kind = kind;
+  openSheet(2, { title: kind === 'make' ? 'Марка' : 'Модель', icon: 'car', c: '--c-car',
+    body: '<div class="field"><input id="pkq" placeholder="Пошук" oninput="pkDraw()" autocomplete="off"></div><div id="pkBox" class="card2" style="padding:0;overflow:hidden;gap:0"></div>',
+    footer: `<button onclick="closeSheet(2)">Скасувати</button><button class="p" onclick="pkManual()">${kind === 'make' ? 'Інша марка' : 'Інша модель'}</button>`, after: pkDraw });
+}
+function pickMake() { pkOpen('make'); }
+function pickModel() { if (!$('cfMake').value.trim()) { toast('Спочатку оберіть марку', true); pickMake(); return; } pkOpen('model'); }
+function pkDraw() {
+  const q = (($('pkq') || {}).value || '').toLowerCase().trim(), box = $('pkBox'); if (!box) return; let h = '';
+  if (pk.kind === 'make') {
+    h = [...new Set(CARS.map(c => c[0]))].sort((a, b) => a.localeCompare(b)).filter(b => !q || b.toLowerCase().includes(q)).map(b => { const n = CARS.filter(c => c[0] === b && c[1]).length;
+      return `<button class="brow2" data-v="${esc(b)}" onclick="pkSet(this.dataset.v)">${bIcon(b)}<span>${esc(b)}</span><span class="m">${n ? n + (n % 10 === 1 && n % 100 !== 11 ? ' модель' : (n % 10 >= 2 && n % 10 <= 4 && (n % 100 < 10 || n % 100 >= 20)) ? ' моделі' : ' моделей') : ''}</span></button>`; }).join('');
+  } else {
+    const mk = $('cfMake').value.trim();
+    h = CARS.filter(c => c[0] === mk && c[1] && (!q || c[1].toLowerCase().includes(q))).map(c => `<button class="brow2" data-v="${esc(c[1])}" data-y="${esc(c[2])}" onclick="pkSet(this.dataset.v,this.dataset.y)">${bIcon(mk)}<span>${esc(c[1])}</span><span class="m">${esc(c[2])}</span></button>`).join('');
+  }
+  box.innerHTML = h || '<div class="empty" style="padding:16px">Немає у списку. Натисни «' + (pk.kind === 'make' ? 'Інша марка' : 'Інша модель') + '»</div>';
+}
+function pkSet(v, y) {
+  if (pk.kind === 'make') { if ($('cfMake').value !== v) $('cfModel').value = ''; $('cfMake').value = v; closeSheet(2); }
+  else { $('cfModel').value = v; const yr = (String(y || '').match(/\d{4}/) || [''])[0]; if (yr && !$('cfYear').value) $('cfYear').value = yr; closeSheet(2); }
+}
+function pkManual() { const el = $(pk.kind === 'make' ? 'cfMake' : 'cfModel'); el.readOnly = false; el.onclick = null; el.placeholder = 'Введіть вручну'; closeSheet(2); setTimeout(() => el.focus(), 80); }
+
+$('monthPick').value = today().slice(0,7);
+render();
+showPage((location.hash || '').replace('#', '') || 'dash');
+</script>
+
+</body></html>
